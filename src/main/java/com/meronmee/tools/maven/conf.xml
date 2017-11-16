@@ -1,6 +1,0 @@
-<jar>my_demo.jar</jar>
-<dependency>
-	<groupId>com.demo</groupId>
-	<artifactId>tools-maven</artifactId>
-	<version>1.2.0</version>
-</dependency>

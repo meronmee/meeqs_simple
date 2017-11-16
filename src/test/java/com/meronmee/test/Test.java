@@ -1,14 +1,16 @@
 package com.meronmee.test;
 
-import java.io.File;
-import java.nio.file.Paths;
-
-
+/**
+ * Java 代码测试工具类
+ * @author Meron
+ *
+ */
 public class Test {
 
 	public static void main(String[] args) {
-		System.out.println("Dir米饭".length());
-		
+		run();		
 	}
-
+	
+	public static void run(){
+	}
 }
