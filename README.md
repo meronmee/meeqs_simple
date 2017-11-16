@@ -1,4 +1,4 @@
-#Java SSM 快速开发框架
+** Java SSM 快速开发框架**
 - Maven
 - Spring（IOC DI AOP 声明式事务处理）
 - SpringMVC（支持Restful风格）
@@ -13,7 +13,8 @@
 - JSP JSTL JavaScript
 - Sping Shiro权限控制（待完善）
 
-#目录结构  
+** 目录结构 **
+<pre>
 |--src/main/java		- Java主程序目录
 |
 |
@@ -31,3 +32,4 @@
 `--src/test/resources	- 测试配置文件目录
 	|-- doc	- 相关文档
 	`-- sql	- 数据库脚本
+</pre>
