@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+	<!-- https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html -->
+   
+    <!-- 激活组件扫描功能 -->
+    <context:component-scan base-package="com.meronmee"/>
+    
+    <!-- 启动对@AspectJ注解的支持 -->
+    <aop:aspectj-autoproxy proxy-target-class="true" />
+
+    <!--
+    Configures the annotation-driven Spring MVC Controller programming model
+    -->
+    <mvc:annotation-driven>
+    	 <mvc:return-value-handlers>
+    	 	<bean name="jsonResultReturnValueHandler" class="com.meronmee.core.handler.JsonResultReturnValueHandler"/>
+    	 </mvc:return-value-handlers>
+    </mvc:annotation-driven>
+
+    <!--静态资源默认servlet配置
+    	1、加入对静态资源的处理:js,css,gif,png
+    	2、允许使用"/"做整体映射
+    -->
+    <mvc:default-servlet-handler/>
+    
+     <!-- 拦截器 -->
+	<mvc:interceptors>		
+	  <!-- 接口拦截器 -->
+	  <mvc:interceptor>
+	     <mvc:mapping path="/**/*.htm"/>
+	     <mvc:mapping path="/**/*.htm?*"/>
+	     <mvc:mapping path="/**/*.json"/>
+	     <mvc:mapping path="/**/*.json?*"/>
+	     <bean name="globalInterceptor" class="com.meronmee.core.interceptor.GlobalInterceptor"/>		  	  
+	  </mvc:interceptor>
+	</mvc:interceptors>
+	
+	<!-- 全局异常捕捉 -->
+	<bean name="globalExceptionResolver" class="com.meronmee.core.exception.GlobalExceptionResolver" />
+		
+	<!-- Freemarker配置 -->
+    <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value="/WEB-INF/view/" />
+        <property name="freemarkerSettings">
+            <props>                
+                <prop key="tag_syntax">auto_detect</prop>
+				<prop key="template_update_delay">0</prop>
+				<prop key="defaultEncoding">UTF-8</prop>
+				<prop key="url_escaping_charset">UTF-8</prop>
+				<prop key="locale">zh_CN</prop>
+				<prop key="boolean_format">true,false</prop>
+				<prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>
+				<prop key="date_format">yyyy-MM-dd</prop>
+				<prop key="time_format">HH:mm:ss</prop>
+				<prop key="number_format">0.######</prop>
+				<prop key="whitespace_stripping">true</prop>				
+                <prop key="classic_compatible">true</prop>
+                <prop key="template_exception_handler">ignore</prop>
+            </props>
+        </property>
+    </bean> 
+    <!-- 
+    	Freemarker视图解释器
+    	可定义多个视图解析器，通过order来指定优先级(越小越优先)
+     -->
+    <bean id="freemarkerViewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+    	<property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"/>
+    	<property name="order" value="0" />
+       	<property name="contentType" value="text/html;charset=UTF-8"/>
+        <property name="cache" value="true" />  
+        <property name="prefix" value="" />  
+        <property name="suffix" value=".html" />  
+        <property name="requestContextAttribute" value="request" />  
+        <property name="exposeSpringMacroHelpers" value="false" />  
+        <property name="exposeRequestAttributes" value="false" />  
+        <property name="exposeSessionAttributes" value="false" />  
+        <property name="allowSessionOverride" value="true"/>
+    </bean>
+    
+    <!-- 默认的视图解析器 在上边的解析错误时使用 (默认使用html)- -->
+	<bean id="defaultViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="contentType" value="text/html;charset=UTF-8" />
+		<property name="order" value="3" />
+		<property name="prefix" value="" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+		
+    <!--文件上传
+    https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html#mvc-multipart
+	需要引入commons-fileupload 
+    -->    
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="52428800"/> <!-- 文件上传最大为50M -->
+		<property name="maxInMemorySize" value="4096" />
+	</bean>
+	
+</beans>

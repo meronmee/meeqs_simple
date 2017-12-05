@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<!-- https://segmentfault.com/a/1190000008315137 -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<!--
+				格式说明:http://logback.qos.ch/manual/layouts.html#ClassicPatternLayout
+	      		日志输出格式：%d表示日期时间，%thread表示线程名，%-5level：级别从左显示5个字符宽度
+	       		%logger{50} 表示logger名字最长50个字符，否则按照句点分割。 %msg：日志消息，%n是换行符
+	       	-->
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%logger:%line] - %msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="LOGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+	  <!-- 当前Log文件名 -->
+	  <file>./logs/meeqs.log</file>
+	  <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
+	    	<!-- 每天的Log文件压缩备份为./logs/meeqs.%d{yyyy-MM-dd}.log-->
+	    	<fileNamePattern>./logs/meeqs.%d{yyyy-MM-dd}.log</fileNamePattern>
+	    	<!-- 超过30天的备份文件会被删除 -->
+	    	<maxHistory>30</maxHistory> 
+	  </rollingPolicy>
+	  <encoder>
+	      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%logger:%line] - %msg%n</pattern>
+	  </encoder>
+	</appender>  
+    
+	<logger name="com.meronmee" level="INFO"/>
+	<logger name="org.springframework" level="ERROR"/>
+
+	<root level="ERROR">
+		<appender-ref ref="STDOUT"/>
+		<appender-ref ref="LOGFILE"/>
+	</root>  
+</configuration>
