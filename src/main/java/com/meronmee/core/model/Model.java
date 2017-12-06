@@ -1,4 +1,4 @@
-package com.meronmee.core.commons;
+package com.meronmee.core.model;
 
 import java.io.Serializable;
 import java.util.Date;

@@ -240,6 +240,7 @@
 			<properties>
 				<package.env>dev</package.env>
 				<package.warname>${project.artifactId}.dev.${timestamp}</package.warname>
+				<package.excludes>WEB-INF/classes/com/meronmee/demo/**</package.excludes>
 			</properties>
 		</profile>
 		<!-- 测试环境 -->
@@ -248,6 +249,7 @@
 			<properties>
 				<package.env>test</package.env>
 				<package.warname>${project.artifactId}.test.${timestamp}</package.warname>
+				<package.excludes>WEB-INF/classes/com/meronmee/demo/**</package.excludes>
 			</properties>
 		</profile>
 		<!-- 预生产环境 -->
@@ -256,6 +258,7 @@
 			<properties>
 				<package.env>prep</package.env>
 				<package.warname>${project.artifactId}.prep.${timestamp}</package.warname>
+				<package.excludes>WEB-INF/classes/com/meronmee/demo/**</package.excludes>
 			</properties>
 		</profile>
 		<!-- 生产环境 -->
@@ -264,6 +267,7 @@
 			<properties>
 				<package.env>prod</package.env>
 				<package.warname>${project.artifactId}.prod.${timestamp}</package.warname>
+				<package.excludes>WEB-INF/classes/com/meronmee/demo/**</package.excludes>
 			</properties>
 		</profile>
 	</profiles>
@@ -280,7 +284,7 @@
                     <exclude>**/*.properties_*</exclude>
                     <exclude>**/*.xml_*</exclude>
                 </excludes>  
-            </resource>  
+            </resource>
         </resources>  
         
 		<plugins>
@@ -318,6 +322,7 @@
 			</plugin>
 			
 			<!-- 打包插件 -->
+			<!-- http://maven.apache.org/plugins/maven-war-plugin/war-mojo.html -->
 			<plugin>  
                 <groupId>org.apache.maven.plugins</groupId>  
                 <artifactId>maven-war-plugin</artifactId>  
@@ -326,6 +331,7 @@
                     <archive>  
                         <addMavenDescriptor>false</addMavenDescriptor>  
                     </archive>
+                    <packagingExcludes>${package.excludes}</packagingExcludes>  
                 </configuration>  
             </plugin>  
 			

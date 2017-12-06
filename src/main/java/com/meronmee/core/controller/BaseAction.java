@@ -1,4 +1,4 @@
-package com.meronmee.core.commons;
+package com.meronmee.core.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
-@Controller
+/**
+ * Controller 基类
+ * @author Meron
+ *
+ */
+//@Controller
 public class BaseAction {
     public final Logger log = LoggerFactory.getLogger(this.getClass());
 

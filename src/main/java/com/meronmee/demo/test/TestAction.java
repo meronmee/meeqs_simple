@@ -1,4 +1,4 @@
-package com.meronmee.base.controller;
+package com.meronmee.demo.test;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.meronmee.core.commons.BaseAction;
+import com.meronmee.core.controller.BaseAction;
 import com.meronmee.core.dto.JsonResult;
 import com.meronmee.core.dto.Success;
 import com.meronmee.core.utils.Assert;
