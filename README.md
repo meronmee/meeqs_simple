@@ -1,8 +1,8 @@
 # Java SSM 快速开发框架
-- Maven
+- Maven（分环境配置、打包）
 - Spring（IOC DI AOP 声明式事务处理）
 - SpringMVC（支持Restful风格）
-- Mybatis（最少配置方案）
+- Mybatis（封装公共操作 + 最少配置方案）
 - 统一的异常处理
 - Druid（数据源配置 sql性能监控)
 - Sping Shiro权限控制（待完善）
