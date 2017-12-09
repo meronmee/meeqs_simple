@@ -40,7 +40,7 @@ public class JsonResultReturnValueHandler implements HandlerMethodReturnValueHan
 	@Override
 	public void handleReturnValue(Object returnValue, MethodParameter returnType, ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest) throws Exception {
-		log.info("------handleReturnValue---------");	
+		//log.info("------handleReturnValue---------");	
 		if (returnValue == null) {
 			mavContainer.setRequestHandled(true);//设为整个请求已经处理完成
 			return;

@@ -6,4 +6,9 @@ package com.meronmee.core.commons;
  *
  */
 public class Const {
+	/**
+	 * MyBatis事务管理器
+	 * @see src/main/resources/spring/spring-db.xml#transactionManager
+	 */
+	public static final String MYBATIS_TRANSACTION_MANAGER = "transactionManager";
 }

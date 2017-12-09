@@ -23,7 +23,7 @@ public class GlobalInterceptor extends HandlerInterceptorAdapter {
 	 */
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws ServletException {	
-		log.info("------preHandle---------");	
+		//log.info("------preHandle---------");	
 		InterceptorHelper.printRequestLog(request, response);
 		return true;
 	}
@@ -34,7 +34,7 @@ public class GlobalInterceptor extends HandlerInterceptorAdapter {
 	 */
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-		log.info("------postHandle---------");		
+		//log.info("------postHandle---------");		
 		if (null == modelAndView) {
 			return;
 		}

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="demoMapper">	
+	<!-- 
+		当前注册的用户数
+	 -->
+	<select id="demoQuery" resultType="int">
+		select count(DISTINCT id)
+		from user
+		where sex = 1
+	</select>
+	
+    <!-- 批量创建用户 -->
+    <insert id="addUsers" parameterType="java.util.List">		
+		INSERT INTO user (username, password, mobile, nickname, realname, email, sex, createTime, updateTime, deleteStatus)
+		VALUES  
+	    <foreach collection="list" item="item" index="index" separator="," >  
+	   		(#{item.username}, #{item.password}, #{item.mobile}, #{item.nickname}, #{item.realname}, #{item.email}, #{item.sex}, NOW(), NOW(), b'0')
+	    </foreach> 
+	</insert>
+	
+	<select id="demoQueryIn" resultType="int">
+		select count(*)
+		from user u
+		where 1=1 
+		and u.id in (${userIds})
+	</select>
+	
+	<select id="demoQueryCData" resultType="int">
+		select count(*)
+		from user u
+		where 1=1 
+		and u.createTime <![CDATA[>=]]> #{createTime}
+	</select>
+	
+	<!-- 
+		更新用户信息
+	 -->
+	<update id="updateUser" parameterType="com.meronmee.base.model.User">
+		update user u
+		set u.realname = #{realname}
+		<if test="password != null">		  
+		,u.`password` = #{password}
+		</if>
+		where u.id = #{id}
+	</update>
+	
+	<!-- 新增用户 -->
+    <insert id="createUser" useGeneratedKeys="true" keyProperty="id" parameterType="User">
+		INSERT INTO user (username, password, mobile, nickname, realname, email, sex, createTime, updateTime, deleteStatus)
+		VALUES (#{username}, #{password}, #{mobile}, #{nickname}, #{realname}, #{email}, #{sex}, NOW(), NOW(), b'0')
+	</insert>
+	
+	<!-- 删除 -->
+    <delete id="deleteUser" parameterType="string">
+		delete from user
+		where username = #{username}
+	</delete>
+	
+		
+	<!-- 演示列表分页查询  -->
+	<select id="demoQueryList" parameterType="map" resultType="map">
+		SELECT username AS username
+			, password AS password
+			, mobile AS mobile
+			, nickname AS nickname
+			, realname AS realname
+			, email AS email
+			, sex AS sex
+			, id AS id
+			, createTime AS createTime
+			, updateTime AS updateTime
+			, deleteStatus AS deleteStatus
+		FROM user o
+		WHERE o.deleteStatus = 0
+		
+			<if test="nickname != null">		  
+			and o.nickname like CONCAT('%', #{nickname}, '%') 
+			</if>
+			
+			<if test="beginTime != null">		  
+			and o.createTime <![CDATA[>=]]> #{beginTime}
+			</if>
+		
+			and (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(o.createTime) <![CDATA[<=]]> 2592000) #一个月内的记录
+		ORDER BY o.id DESC
+	</select>
+	
+	<!-- 演示列表分页查询-计数  -->
+	<select id="demoQueryCount" parameterType="map"  resultType="long">
+		SELECT count(*)		
+		FROM user o
+		WHERE o.deleteStatus = 0
+		
+			<if test="nickname != null">		  
+			and o.nickname like CONCAT('%', #{nickname}, '%') 
+			</if>
+			
+			<if test="beginTime != null">		  
+			and o.createTime <![CDATA[>=]]> #{beginTime}
+			</if>
+		
+			and (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(o.createTime) <![CDATA[<=]]> 2592000) #一个月内的记录
+	</select>
+	
+	
+	<!-- 测试存储过程 -->
+	<select id="testProc" parameterType="map" statementType="CALLABLE">
+		{
+			call proc_test(  
+	        	#{in_str, jdbcType=VARCHAR, mode=IN},
+	        	#{in_delimiter, jdbcType=VARCHAR, mode=IN},
+	        	#{in_trim, jdbcType=TINYINT, mode=IN},
+	        	
+	        	#{io_var, jdbcType=INTEGER, mode=INOUT},
+	        	
+	        	#{out_total, jdbcType=INTEGER, mode=OUT},
+	        	#{out_result, jdbcType=VARCHAR, mode=OUT}
+	      	)
+      	}
+	</select>
+</mapper>

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
  * @author Meron
  *
  */
-//@Service
+@Service
 public class BaseService {
     public final Logger log = LoggerFactory.getLogger(this.getClass());
 }

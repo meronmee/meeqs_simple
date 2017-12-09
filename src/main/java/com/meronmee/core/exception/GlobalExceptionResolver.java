@@ -26,7 +26,7 @@ public class GlobalExceptionResolver implements HandlerExceptionResolver {
 	
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception e) {	
-		log.info("------resolveException---------");
+		//log.info("------resolveException---------");
 		String url = request.getRequestURL().toString();
 		//if (url.matches("^.+\\.(json|xml|htm|api)(\\?.*)?$")) { 
 		if (url.matches("^.+\\.(json)(\\?.*)?$")) {//Ajax请求

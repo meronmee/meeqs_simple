@@ -1,7 +1,9 @@
 package com.meronmee.core.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -47,12 +49,38 @@ public class Assert {
 			error(message);
 		}
 	}
-	
+
+	/**
+	 * @param arg
+	 * @param message
+	 * @throws BizException arg 为 {@code null}
+	 */
 	public static void isNotNull(Object arg, String message) {
 		if (arg == null) {
 			error(message);
 		}
 	}
+	/**
+	 * @param c
+	 * @param message
+	 * @throws BizException 集合C 为 空或者size=0
+	 */
+	public static <E> void isNotEmpty(Collection<E> c, String message) {
+		if (BaseUtils.isEmpty(c)) {
+			error(message);
+		}
+	}
+	/**
+	 * @param c
+	 * @param message
+	 * @throws BizException Map  为 空或者size=0
+	 */
+	public static <K, V> void isNotEmpty(Map<K, V> m, String message) {
+		if (BaseUtils.isEmpty(m)) {
+			error(message);
+		}
+	}
+	
 	
 	/**
 	 * @param array

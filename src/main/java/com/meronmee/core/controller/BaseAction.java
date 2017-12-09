@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.meronmee.core.dao.CommonDao;
+import com.meronmee.core.service.MyService;
+
 import java.util.List;
 
 /**
@@ -18,8 +21,11 @@ import java.util.List;
  * @author Meron
  *
  */
-//@Controller
+@Controller
 public class BaseAction {
-    public final Logger log = LoggerFactory.getLogger(this.getClass());
-
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    
+    @Autowired
+	protected MyService service;
+    
 }

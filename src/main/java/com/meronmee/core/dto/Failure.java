@@ -8,7 +8,7 @@ public class Failure extends JsonResult{
 	private static final long serialVersionUID = -4947169183770256483L;
 
 	public Failure(){
-		this.setCode(JsonResult.Code.ERROR);
+		this.setCode(JsonResult.Code.ERROR).setMsg("Failure");
 	}
 	
 	/**

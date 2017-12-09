@@ -1,6 +1,9 @@
 package com.meronmee.demo.test;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.meronmee.base.model.User;
 import com.meronmee.core.controller.BaseAction;
+import com.meronmee.core.dao.helper.SqlKey;
 import com.meronmee.core.dto.JsonResult;
 import com.meronmee.core.dto.Success;
 import com.meronmee.core.utils.Assert;
@@ -107,4 +112,61 @@ public class TestAction extends BaseAction{
         
     	return new Success().setMsg(file.getOriginalFilename());
     }
+    
+    
+    /**
+	 * 测试数据
+	 */ 
+    @RequestMapping(value = "/test/db.json", method = RequestMethod.POST)
+    public JsonResult testDB(HttpServletRequest request, HttpServletResponse response) {
+    	/* */
+    	User user = new User();
+    	user.setUsername("meron2");
+    	user.setPassword("11111");
+    	user.setMobile("13455667799");
+    	user.setEmail("abc@d.com");
+    	user.setNickname("小米");
+    	user.setRealname("米饭");
+    	this.service.createModel(User.class, user); 
+    	
+    	/*
+    	User user = this.service.retrieveModel(User.class, 6L);
+    	user.setNickname("小米粒");
+    	user.setPassword("123456");
+    	this.service.updateModel(User.class, user);
+    	user = this.service.retrieveModel(User.class, 6L);
+    	*/
+    	
+    	//List<User> users = this.service.findModelByProperty(User.class, "id", Arrays.asList());
+    	
+    	//User user = this.service.findOneModelByProperty(User.class, "password", "11111");
+    	
+    	//this.service.deleteModel(User.class, user);
+    	/*
+    	int ret = this.service.deleteModelPhysically(User.class, user);
+    	log.info("deleted:{}", ret);
+    	*/
+    	return new Success(user);
+    }
+    
+
+	/**
+	 * 测试存储过程
+	 */
+	@RequestMapping(value = "/test/proc.json", method = RequestMethod.POST)
+	public JsonResult testProc(HttpServletRequest request, HttpServletResponse response) {
+			//参数校验
+			Map<String, Object> map = new HashMap<>();
+			map.put("in_str", "1, aa ,  bb, ccc ,  4");
+			map.put("in_delimiter", ",");
+			map.put("in_trim", 1);
+			map.put("io_var", 2);
+			//map.put("out_total", 0);
+			//map.put("out_result", "");
+			
+			this.service.runProc(SqlKey.demo_testProc, map);			
+
+	    	return new Success(map);
+	}
+    
 }

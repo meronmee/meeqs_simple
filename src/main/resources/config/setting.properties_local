@@ -1,6 +1,0 @@
-#----------------------------
-#		\u4e1a\u52a1\u914d\u7f6e\u4fe1\u606f
-#-----------------------------
-
-#\u8fd0\u884c\u73af\u5883, prod:\u751f\u4ea7\u73af\u5883, prep:\u9884\u751f\u4ea7\u73af\u5883, test:\u6d4b\u8bd5\u73af\u5883, dev:\u5f00\u53d1\u73af\u5883
-app.version=1.0.0.local

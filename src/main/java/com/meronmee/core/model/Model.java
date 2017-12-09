@@ -1,11 +1,13 @@
 package com.meronmee.core.model;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
+import com.meronmee.core.utils.BaseUtils;
 
 /**
  *
@@ -39,6 +41,14 @@ public abstract class Model implements Serializable{
 	public void setId(Long id) {
 		this.id = id;
 	}
+	public void setId(BigInteger id) {
+		this.id = BaseUtils.toLong(id);
+	}
+	public void setId(Integer id) {
+		this.id = BaseUtils.toLong(id);
+	}
+	
+	
 	public Date getCreateTime() {
 		return createTime;
 	}

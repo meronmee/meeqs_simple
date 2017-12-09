@@ -33,9 +33,9 @@ import org.springframework.util.ReflectionUtils.MethodFilter;
 
 /**
  * 反射工具类
- * @author 杨尚川
+ * @author meron
  */
-public class ReflectionUtils {
+public class ReflectionUtils{
 	protected static final Logger LOG = LoggerFactory.getLogger(ReflectionUtils.class);
     
     private ReflectionUtils(){};

@@ -8,7 +8,7 @@ public class Success extends JsonResult{
 	private static final long serialVersionUID = -454516195068421848L;
 	
 	public Success(){
-		this.setCode(JsonResult.Code.SUCCESS);
+		this.setCode(JsonResult.Code.SUCCESS).setMsg("Success");
 	}
 	
 	/**
@@ -23,7 +23,7 @@ public class Success extends JsonResult{
 	 * @param data 主体数据
 	 */
     public Success(Object data) {
-    	this("SUCCESS", data);
+    	this("Success", data);
     }
     
     /**

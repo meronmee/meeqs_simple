@@ -28,6 +28,13 @@
     
 	<logger name="com.meronmee" level="INFO"/>
 	<logger name="org.springframework" level="ERROR"/>
+	<!-- 配置mybatis只在控制台中输出sql
+	 	 see:http://blog.csdn.net/wangnan537/article/details/50069697 -->
+	<!--  
+	<logger name="mybatis" level="DEBUG">
+	  <appender-ref ref="STDOUT"/>
+	</logger>
+   -->
 
 	<root level="ERROR">
 		<appender-ref ref="STDOUT"/>
