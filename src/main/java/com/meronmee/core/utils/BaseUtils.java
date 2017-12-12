@@ -1,5 +1,6 @@
 package com.meronmee.core.utils;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.InetAddress;
@@ -2263,10 +2264,24 @@ public class BaseUtils {
 		return deleteMapKeys(map, keys);
 	}
 	
+	/**
+	 * 合并为一个URL地址
+	 * @param parts
+	 * @return
+	 */
 	public static String mergeUrl(String...parts){
-		String url = StringUtils.join(parts, "/");		
-		//return url.replaceAll("/+", "/");
+		String url = StringUtils.join(parts, "/");	
 		return url.replaceAll("://", ":##").replaceAll("/+", "/").replaceAll(":##", "://");
+	}
+	
+	/**
+	 * 合并为一个文件路径
+	 * @param parts
+	 * @return
+	 */
+	public static String mergePath(String...parts){
+		String path = StringUtils.join(parts, File.separator);
+		return path.replaceAll("\\\\+", "/").replaceAll("/+", "\\"+File.separator);
 	}
 	/**
 	 * 从fastdfs的完整文件路径中截取出文件id

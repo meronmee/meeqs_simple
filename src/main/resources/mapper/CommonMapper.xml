@@ -5,41 +5,61 @@
 		根据ID查询实体
 	 -->
 	<select id="retrieve" parameterType="map" resultType="map">
-		select ${selectColumnNames}
-		from ${tableName} o
-		where o.id = #{id}		
+		SELECT ${selectColumnNames}
+		FROM ${tableName} o
+		WHERE o.id = #{id}		
 	</select>
 	
 	<!-- 
 		根据某个属性不分页查询实体列表
 	 -->
 	<select id="findByProperty" parameterType="map" resultType="map">
-		select ${selectColumnNames}
-		from ${tableName} o
+		SELECT ${selectColumnNames}
+		FROM ${tableName} o
 		
 		<if test="columnValue != null">		 
-		where o.${columnName} = #{columnValue}
+		WHERE o.${columnName} = #{columnValue}
 		</if>
 		
 		<if test="columnValues != null">	
-		where o.${columnName} in		
+		WHERE o.${columnName} IN		
 			<foreach item="item" index="index" collection="columnValues" open="(" separator="," close=")">
 	            #{item}
 	        </foreach>	
 		</if>
 		
-		order by o.id desc
+		ORDER BY o.id DESC
+	</select>
+	
+	<!-- 
+		根据一组属性不分页查询实体列表
+	 -->
+	<select id="findByProps" parameterType="map" resultType="map">
+		SELECT ${selectColumnNames}
+		FROM ${tableName} o
+		WHERE 1=1	
+			
+		<foreach item="item" index="index" collection="pairs">
+		   	<if test="item.columnValue != null">
+		   	AND ${item.columnName} = #{item.columnValue}
+			</if>
+			<if test="item.columnValue == null">
+		   	AND ${item.columnName} IS NULL
+			</if>
+       	</foreach>     
+		
+		ORDER BY o.id DESC
 	</select>
 	
 	<!-- 
 		根据某个属性查询一个实体
 	 -->
 	<select id="findOneByProperty" parameterType="map" resultType="map">
-		select ${selectColumnNames}
-		from ${tableName} o
-		where o.${columnName} = #{columnValue}
-		order by o.id desc
-		limit 1
+		SELECT ${selectColumnNames}
+		FROM ${tableName} o
+		WHERE o.${columnName} = #{columnValue}
+		ORDER BY o.id DESC
+		LIMIT 1
 	</select>
 		
 	<!-- 根据实体新增一条表记录  -->
@@ -53,37 +73,37 @@
 		
 	<!-- 更新实体 -->
 	<update id="update" parameterType="map">
-		update ${tableName}
-		set		
+		UPDATE ${tableName}
+		SET		
 			<foreach item="item" index="index" collection="pairs">
             ${item.columnName} = #{item.columnValue},
         	</foreach>                
 			updateTime = NOW()			
-		where id = #{id}
+		WHERE id = #{id}
 	</update>
         		
 	<!-- 逻辑删除实体-->
 	<update id="delete" parameterType="map">
-		update ${tableName}
-		set 
+		UPDATE ${tableName}
+		SET 
 			deleteStatus = 1,  
 			updateTime = NOW()
 		<if test="id != null">		  
-		where id = #{id}
+		WHERE id = #{id}
 		</if>
 		<if test="ids != null">	
-		where id in (${ids})
+		WHERE id IN (${ids})
 		</if>
 	</update>
 	
 	<!-- 物理删除实体 -->
     <delete id="deletePhysically" parameterType="map">
-		delete from ${tableName}
+		DELETE FROM ${tableName}
 		<if test="id != null">		  
-		where id = #{id}
+		WHERE id = #{id}
 		</if>
 		<if test="ids != null">	
-		where id in (${ids})
+		WHERE id IN (${ids})
 		</if>
 	</delete>   
 </mapper>

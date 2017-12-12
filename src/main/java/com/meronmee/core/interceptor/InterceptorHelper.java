@@ -65,8 +65,8 @@ public class InterceptorHelper extends HandlerInterceptorAdapter {
 			String url = request.getRequestURL().toString();
 			StringBuffer logSB=new StringBuffer();
 			logSB.append("[type=request")
-			     .append("##sessionid=").append(session.getId())
-			     .append("##reqId=").append(reqId)
+				 .append("##reqId=").append(reqId)
+			     .append("##sessionid=").append(session.getId())       
 			     .append("##url=").append(url);
 			
 			if (url.matches("^.+\\.(json|htm)(\\?.*)?$")) {				
@@ -113,7 +113,7 @@ public class InterceptorHelper extends HandlerInterceptorAdapter {
 
 			log.info(logSB.append("]").toString());
 		} catch (Exception e) {
-			log.error("printRequestLog出现异常", e);
+			log.error("打印request日志出现异常", e);
 		}
 	}
 	
@@ -128,14 +128,14 @@ public class InterceptorHelper extends HandlerInterceptorAdapter {
 			String url = request.getRequestURL().toString();
 			StringBuffer logSb=new StringBuffer();
 			logSb.append("[type=response")
-		     .append("##sessionid=").append(request.getSession().getId())
-		     .append("##reqId=").append(request.getAttribute("reqId"))
-		     .append("##url=").append(url)
-		     .append("##repBody=").append("text")
-		     .append("]");
+			 	.append("##reqId=").append(request.getAttribute("reqId"))
+			 	.append("##sessionid=").append(request.getSession().getId())
+			 	.append("##url=").append(url)
+			 	.append("##repBody=").append("text")
+			 	.append("]");
 			log.info(logSb.toString());	
 		} catch (Exception e) {
-			log.error("printResponseLog出现异常", e);
+			log.error("打印response日志出现异常", e);
 		}
 	}
 }

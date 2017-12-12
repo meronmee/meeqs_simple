@@ -12,6 +12,9 @@ public enum SqlKey {
 	/** Common - 根据某个属性不分页查询实体列表 */
 	common_findByProperty("commonMapper.findByProperty"),
 	
+	/** Common - 根据一组属性不分页查询实体列表 */
+	common_findByProps("commonMapper.findByProps"),
+	
 	/** Common - 根据某个属性查询一个实体 */
 	common_findOneByProperty("commonMapper.findOneByProperty"),
 	
@@ -27,10 +30,21 @@ public enum SqlKey {
 	/** Common - 物理删除实体 */
 	common_deletePhysically("commonMapper.deletePhysically"),
 	
-	
+	//---------------------------------
 	
 	/** Demo - 测试存储过程 */
 	demo_testProc("demoMapper.testProc"),
+	/** Demo - 测试分页查询 */
+	demo_demoQueryList("demoMapper.demoQueryList"),
+	/** Demo - 测试分页统计 */
+	demo_demoQueryCount("demoMapper.demoQueryCount"),
+	/** Demo - 测试批量新增 */
+	demo_createUserBatch("demoMapper.createUserBatch"),
+	/** Demo - 测试新增实体 */
+	demo_createUser("demoMapper.createUser"),
+	/** Demo - 测试更新实体 */
+	demo_updateUser("demoMapper.updateUser"),
+	
 	;
 	
 	/**Key对应的SQL语句ID*/

@@ -32,3 +32,14 @@
 	`-- sql	- 数据库脚本
 </pre>
 
+# 使用说明
+1. 下载代码后先运行 src/test/java/com/meronmee/local/ModifyBasePackage.java 修改基础包名
+2. 修改pom.xml中的artifactId
+3. 到此已经可以跑起来了
+4. 可使用 build_*.bat 打包对应环境下的WAR发布包。其中, 
+  - build_dev.bat 用于打包开发版本（使用src/main/resources/config/*.properties_dev配置信息）
+  - build_test.bat 用于打包测试版本（使用src/main/resources/config/*.properties_test配置信息）
+  - build_prep.bat 用于打包预生产版本（使用src/main/resources/config/*.properties_prep配置信息）
+  - build_prod.bat 用于打包生产版本（使用src/main/resources/config/*.properties_prod配置信息）
+	
+

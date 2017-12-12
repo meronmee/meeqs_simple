@@ -22,6 +22,7 @@ import com.meronmee.core.model.Model;
  * <li>实体必须含有数据库表名称注解<code>@Table("表名称")</code></li>
  * <li>实体属性名和对应的表字段名建议保持一致，否则须添加表字段名注解<code>@Column("列名称")</code></li>
  * <li>数据库表中必须含有id,createTime,updateTime,deleteStatus等几个字段</li>
+ * <li>需要注意MySQL字段类型和Java字段类型转换问题，如tinyint(1)-Boolean, tinyint(2)-Integer，可以在实体中增加对应字段相关兼容类型的Setter</li>
  * 
  * 
  * <h3>二、引用 SQL 语句的增删改查</h3>
@@ -71,6 +72,22 @@ public interface MyService{
 	 */
 	public <T extends Model> List<T> findModelByProperty(Class<T> modelClass, String propertyName, Object propertyValue);
 
+	/**
+	 * 根据一组属性不分页查询实体Map列表
+	 * @param modelClass 实体类
+	 * @param params 参数键值对, 多个参数之间是 AND 关系。为null或为空查询全部
+	 * @return Model类型实体对应的Map列表
+	 */
+	public <T extends Model> List<Map<String, Object>> findMapByProps(Class<T> modelClass, Map<String, Object> params);
+	
+	/**
+	 * 根据一组属性不分页查询实体Map列表
+	 * @param modelClass 实体类
+	 * @param params 参数键值对, 多个参数之间是 AND 关系。为null或为空查询全部
+   	 * @return Model类型实体列表
+   	 */
+	public <T extends Model> List<T> findModelByProps(Class<T> modelClass, Map<String, Object> params);
+	
 	/**
 	 * 根据某个属性查询一个实体Map
 	 * @param modelClass 实体类

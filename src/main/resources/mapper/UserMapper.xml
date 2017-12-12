@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.meronmee.base.dao.UserDao">
+	<!-- namespace需要与DAO层接口带包完整路径一致，此处的方法语句ID和参数要和DAO中一致 -->
+	
+	<select id="queryByPhone" resultType="User">
+		SELECT *
+		FROM user
+		WHERE mobile= #{phone} 
+		limit 1
+	</select>
+	
+	<select id="queryAll" resultType="User">
+		SELECT *
+		FROM user
+		ORDER BY id DESC
+		limit #{offset},#{limit}
+	</select>
+
+
+   	<update id="updateNickname">
+		UPDATE user 
+		SET nickname = #{nickname}
+		WHERE id = #{id}
+	</update>
+</mapper>

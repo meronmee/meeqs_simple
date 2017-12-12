@@ -1,17 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
-<mapper namespace="demoMapper">	
-	<!-- 
-		当前注册的用户数
-	 -->
-	<select id="demoQuery" resultType="int">
-		select count(DISTINCT id)
-		from user
-		where sex = 1
-	</select>
-	
+<mapper namespace="demoMapper">		
     <!-- 批量创建用户 -->
-    <insert id="addUsers" parameterType="java.util.List">		
+    <insert id="createUserBatch" parameterType="java.util.List">		
 		INSERT INTO user (username, password, mobile, nickname, realname, email, sex, createTime, updateTime, deleteStatus)
 		VALUES  
 	    <foreach collection="list" item="item" index="index" separator="," >  

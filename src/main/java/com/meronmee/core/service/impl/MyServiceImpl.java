@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -46,6 +47,7 @@ import com.meronmee.core.utils.ReflectionUtils;
  * <li>实体必须含有数据库表名称注解<code>@Table("表名称")</code></li>
  * <li>实体属性名和对应的表字段名建议保持一致，否则须添加表字段名注解<code>@Column("列名称")</code></li>
  * <li>数据库表中必须含有id,createTime,updateTime,deleteStatus等几个字段</li>
+ * <li>需要注意MySQL字段类型和Java字段类型转换问题，如tinyint(1)-Boolean, tinyint(2)-Integer，可以在实体中增加对应字段相关兼容类型的Setter</li>
  * 
  * 
  * <h3>二、引用 SQL 语句的增删改查</h3>
@@ -71,7 +73,7 @@ public class MyServiceImpl implements MyService {
 	 * 根据ID查询实体Map
 	 * @param modelClass 实体类
      * @param modelId 实体ID
-	 * @return Model类型实体
+	 * @return Model类型实体对应的Map
 	 */
     @Override
 	@Transactional(value=Const.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
@@ -115,7 +117,7 @@ public class MyServiceImpl implements MyService {
 	 * @param modelClass 实体类
 	 * @param propertyName 参数名
 	 * @param propertyValue 参数值, 如果是List类型，则会使用IN查询
-	 * @return Model类型实体列表
+	 * @return Model类型实体对应的Map列表
 	 */
     @Override
 	@Transactional(value=Const.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
@@ -163,13 +165,68 @@ public class MyServiceImpl implements MyService {
 		
 		return result;
 	}
+    
+    /**
+	 * 根据一组属性不分页查询实体Map列表
+	 * @param modelClass 实体类
+	 * @param params 参数键值对, 多个参数之间是 AND 关系。为null或为空查询全部
+	 * @return Model类型实体对应的Map列表
+	 */
+    @Override
+	@Transactional(value=Const.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
+	public <T extends Model> List<Map<String, Object>> findMapByProps(Class<T> modelClass, Map<String, Object> params){
+		if(modelClass==null){
+			return new ArrayList<>();
+		}
+
+		List<Map<String, Object>> pairs = new LinkedList<>();
+		if(params!=null && !params.isEmpty()){
+	        for (Entry<String, Object> entry : params.entrySet()) {	            
+	            String columnName = this.getColumnName(modelClass, entry.getKey());
+	
+	            Map<String, Object> pair = new HashMap<>();
+	            pair.put("columnName", columnName);
+	            pair.put("columnValue", entry.getValue());
+	            
+	            pairs.add(pair);
+	        } 		
+		}
+
+		Map<String, Object> sqlParams = new HashMap<>();
+		sqlParams.put("tableName", this.getTableName(modelClass));
+		sqlParams.put("selectColumnNames", this.getSelectColumnNames(modelClass));
+		sqlParams.put("pairs", pairs);	
+				
+		List<Map<String, Object>> list = this.commonDao.find(SqlKey.common_findByProps, sqlParams);
+		
+		return list;
+	}
+    
+    /**
+	 * 根据一组属性不分页查询实体Map列表
+	 * @param modelClass 实体类
+	 * @param params 参数键值对, 多个参数之间是 AND 关系。为null或为空查询全部
+   	 * @return Model类型实体列表
+   	 */
+    @Override
+	@Transactional(value=Const.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
+	public <T extends Model> List<T> findModelByProps(Class<T> modelClass, Map<String, Object> params){
+    	if(modelClass==null){
+			return new ArrayList<>();
+		}
+						
+		List<Map<String, Object>> list = this.findMapByProps(modelClass, params);
+		List<T> result = mapToModel(modelClass, list);
+		
+		return result;
+	}
 
 	/**
 	 * 根据某个属性查询一个实体Map
 	 * @param modelClass 实体类
 	 * @param propertyName 参数名
 	 * @param propertyValue 参数值
-	 * @return Model类型实体
+	 * @return Model类型实体对应的Map
 	 */
     @Override
 	@Transactional(value=Const.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
