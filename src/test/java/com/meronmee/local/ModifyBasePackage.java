@@ -95,7 +95,7 @@ public class ModifyBasePackage {
 		} else {
 			String fileName = file.getAbsolutePath();
 			if(!isTarget(fileName)){
-				//Log.info("跳过略文件:", fileName);				
+				//Log.info("跳过文件:", fileName);				
 				return;
 			}
 

@@ -32,6 +32,17 @@
 	</select>
 	
 	<!-- 
+		根据某个属性查询一个实体
+	 -->
+	<select id="findOneByProperty" parameterType="map" resultType="map">
+		SELECT ${selectColumnNames}
+		FROM ${tableName} o
+		WHERE o.${columnName} = #{columnValue}
+		ORDER BY o.id DESC
+		LIMIT 1
+	</select>
+	
+	<!-- 
 		根据一组属性不分页查询实体列表
 	 -->
 	<select id="findByProps" parameterType="map" resultType="map">
@@ -50,17 +61,29 @@
 		
 		ORDER BY o.id DESC
 	</select>
-	
+		
 	<!-- 
-		根据某个属性查询一个实体
+		根据一组属性查询一个实体
 	 -->
-	<select id="findOneByProperty" parameterType="map" resultType="map">
+	<select id="findOneByProps" parameterType="map" resultType="map">
 		SELECT ${selectColumnNames}
 		FROM ${tableName} o
-		WHERE o.${columnName} = #{columnValue}
+		WHERE 1=1	
+			
+		<foreach item="item" index="index" collection="pairs">
+		   	<if test="item.columnValue != null">
+		   	AND ${item.columnName} = #{item.columnValue}
+			</if>
+			<if test="item.columnValue == null">
+		   	AND ${item.columnName} IS NULL
+			</if>
+       	</foreach>     
+		
 		ORDER BY o.id DESC
 		LIMIT 1
 	</select>
+	
+	
 		
 	<!-- 根据实体新增一条表记录  -->
     <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="map">

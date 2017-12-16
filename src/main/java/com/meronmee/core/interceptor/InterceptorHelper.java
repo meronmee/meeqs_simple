@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.meronmee.core.utils.BaseUtils;
+import com.meronmee.core.utils.FreemarkerUtils;
 import com.meronmee.core.utils.RequestUtils;
 
 /**
@@ -22,7 +23,7 @@ import com.meronmee.core.utils.RequestUtils;
  */
 public class InterceptorHelper extends HandlerInterceptorAdapter {
 	private static final Logger log = LoggerFactory.getLogger(InterceptorHelper.class);
-		
+			
 	/**
 	 * 初始化 ModelAndView 中的公共变量
 	 * @param request
@@ -47,6 +48,8 @@ public class InterceptorHelper extends HandlerInterceptorAdapter {
 		modelAndView.addObject("baseUrl", RequestUtils.getBaseURL(request));//如：http://localhost:8080/meeqs
 		modelAndView.addObject("base", contextPath);//如：/meeqs
 		modelAndView.addObject("assets", BaseUtils.join(contextPath, "/public/assets"));//如：/meeqs/public/assets
+		
+		modelAndView.addObject("BaseUtils", FreemarkerUtils.wrapperStaticTool(BaseUtils.class));
 	}
 	
 	/**
@@ -126,10 +129,15 @@ public class InterceptorHelper extends HandlerInterceptorAdapter {
 	public static void printResponseLog(HttpServletRequest request, HttpServletResponse response) {
 		try {			
 			String url = request.getRequestURL().toString();
+			String sessionid = "";
+			HttpSession session = request.getSession(false);
+			if(session != null){
+				sessionid = session.getId();
+			}
 			StringBuffer logSb=new StringBuffer();
 			logSb.append("[type=response")
 			 	.append("##reqId=").append(request.getAttribute("reqId"))
-			 	.append("##sessionid=").append(request.getSession().getId())
+			 	.append("##sessionid=").append(sessionid)
 			 	.append("##url=").append(url)
 			 	.append("##repBody=").append("text")
 			 	.append("]");
@@ -137,5 +145,21 @@ public class InterceptorHelper extends HandlerInterceptorAdapter {
 		} catch (Exception e) {
 			log.error("打印response日志出现异常", e);
 		}
+	}
+	
+	/**
+	 * 判断是否是Ajax请求<p>
+	 * 根据url后缀结合实际业务情况判断
+	 * @param request
+	 */
+	public static boolean isAjax(HttpServletRequest request){
+		if(request == null){
+			return false;
+		}
+		String url = request.getRequestURL().toString();
+		
+		//return url.matches("^.+\\.(json|xml|htm|api)(\\?.*)?$"));
+		return url.matches("^.+\\.(json)(\\?.*)?$");
+
 	}
 }

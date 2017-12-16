@@ -6,7 +6,11 @@ package com.meronmee.core.dto;
  */
 public class CertError extends JsonResult{
 	private static final long serialVersionUID = -4947169183770256483L;
-
+	
+	/**
+	 *  Ajax请求授权失败（未授权/权限不够）时返回数据封装类<p>
+	 *  {"code":402, "msg":"授权失败", "data":... }
+	 */
 	public CertError(){
 		this.setCode(JsonResult.Code.CERT_ERROR).setMsg("授权失败");
 	}

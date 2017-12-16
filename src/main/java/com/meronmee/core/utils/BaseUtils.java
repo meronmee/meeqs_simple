@@ -36,7 +36,8 @@ import com.alibaba.fastjson.JSONObject;
  * @author Meron
  *
  */
-public class BaseUtils {	
+public final class BaseUtils {	
+	public static String UTF8 = "UTF8";
 	/**
 	 * 获取文件扩展名(不含点号)
 	 * @param fileName
@@ -497,6 +498,39 @@ public class BaseUtils {
 		}
 		return StringUtils.join(finalList, connector);
 	}
+	/**
+	 * 判断是否是八种基本类型数组，是的话返回元素类型，不是的话返回null
+	 * @param objs
+	 * @return
+	 */
+	public static String getPrimitiveArrayType(Object array){
+		if(array instanceof byte[]){
+			return "byte";
+		}
+		if(array instanceof short[]){
+			return "short";
+		}
+		if(array instanceof int[]){
+			return "int";
+		}
+		if(array instanceof long[]){
+			return "long";
+		}
+		if(array instanceof float[]){
+			return "float";
+		}
+		if(array instanceof double[]){
+			return "double";
+		}
+		if(array instanceof boolean[]){
+			return "boolean";
+		}
+		if(array instanceof char[]){
+			return "char";
+		}
+		return null;		
+	}
+	
 	/**
 	 * 连接成字符串
 	 * @param objs
@@ -1365,6 +1399,7 @@ public class BaseUtils {
 		}
 		return String.valueOf(value).trim();
 	}
+	
 	public static List<String> toStringList(List<Object> list){
 		List<String> result = new ArrayList<String>();
 		if(list != null){
@@ -2377,14 +2412,6 @@ public class BaseUtils {
 		
 		return f1;
 	}
-	/**
-	 * 获取 taskName 对应的 triggerName
-	 * @param taskName
-	 * @return
-	 */
-	public static String getTriggerName(String taskName){
-		return "CronTrigger_" + taskName;
-	}
 	
 	/** 
 	 * 获取本机所有IP 
@@ -2410,16 +2437,7 @@ public class BaseUtils {
 		}  
 		return (String[]) res.toArray(new String[0]);  
 	}
-	
-	/**
-	 * 转换成环信用户id
-	 * @param userId
-	 * @return
-	 */
-	public static String getEasemobUsername(Integer userId){
-		return "jyft_" + userId;
-	}
-	
+		
 
 	/**
 	 * 将nativeQuery的结果转为List<Map>

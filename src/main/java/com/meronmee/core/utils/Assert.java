@@ -15,6 +15,26 @@ import com.meronmee.core.exception.BizException;
  *
  */
 public class Assert {
+	/**
+	 * @param arg
+	 * @param message
+	 * @throws BizException arg 为false或者为 {@code null}
+	 */
+	public static void isTrue(Boolean arg, String message) {
+		if(arg==null || !arg.booleanValue()){
+			error(message);
+		}
+	}
+	/**
+	 * @param arg
+	 * @param message
+	 * @throws BizException arg 为true
+	 */
+	public static void isFalse(Boolean arg, String message) {
+		if(arg!=null && arg.booleanValue()){
+			error(message);
+		}
+	}
 	
 	/**
 	 * @param arg

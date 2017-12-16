@@ -17,10 +17,18 @@
 		limit #{offset},#{limit}
 	</select>
 
-
    	<update id="updateNickname">
 		UPDATE user 
 		SET nickname = #{nickname}
 		WHERE id = #{id}
 	</update>
+	
+	
+	<select id="findByUsernameOrPhone" resultType="User">
+		SELECT *
+		FROM user
+		WHERE mobile = #{param} 
+		OR username = #{param} 
+		LIMIT 1
+	</select>
 </mapper>

@@ -4,14 +4,11 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
-
-
 /**
- * Cookie 辅助类
+ * Cookie 工具类
+ * @author Meron
  */
 public class CookieUtils {
-	
 	/**
 	 * 获得cookie
 	 * 
@@ -20,7 +17,9 @@ public class CookieUtils {
 	 * @return if exist return cookie, else return null.
 	 */
 	public static Cookie getCookie(HttpServletRequest request, String name) {
-		Assert.isNotNull(request, "request invalid");
+		if(request == null){
+			return null;
+		}
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null && cookies.length > 0) {
 			for (Cookie c : cookies) {
@@ -40,7 +39,9 @@ public class CookieUtils {
 	 * @return if exist return cookie, else return null.
 	 */
 	public static String getCookieValue(HttpServletRequest request, String name) {
-		Assert.isNotNull(request, "request invalid");
+		if(request == null){
+			return null;
+		}
 		Cookie cookie = getCookie(request, name);
 		String value = null;
 		if(cookie != null){
@@ -56,7 +57,7 @@ public class CookieUtils {
 	 * @param response
 	 * @param name
 	 * @param value
-	 * @param expiry 生命周期，单位:秒
+	 * @param expiry
 	 * @param domain
 	 * @return
 	 */
@@ -66,11 +67,11 @@ public class CookieUtils {
 		if (expiry != null) {
 			cookie.setMaxAge(expiry);
 		}
-		if (StringUtils.isNotBlank(domain)) {
+		if (BaseUtils.isNotBlank(domain)) {
 			cookie.setDomain(domain);
 		}
 		String ctx = request.getContextPath();
-		cookie.setPath(StringUtils.isBlank(ctx) ? "/" : ctx);
+		cookie.setPath(BaseUtils.isBlank(ctx) ? "/" : ctx);
 		response.addCookie(cookie);
 		return cookie;
 	}
@@ -82,12 +83,12 @@ public class CookieUtils {
 	 * @param response
 	 * @param name
 	 * @param value
-	 * @param expiry  生命周期，单位:秒
+	 * @param expiry
 	 * @return
 	 */
 	public static Cookie addCookie(HttpServletRequest request,HttpServletResponse response,
 			String name, String value, Integer expiry) {
-		String domain = getDomain(request);
+		String domain = request.getServerName();
 		return addCookie(request, response, name, value, expiry, domain);
 	}
 	/**
@@ -101,7 +102,7 @@ public class CookieUtils {
 	 */
 	public static Cookie addCookie(HttpServletRequest request,HttpServletResponse response,
 			String name, String value) {
-		String domain = getDomain(request);
+		String domain = request.getServerName();
 		return addCookie(request, response, name, value, null, domain);
 	}
 
@@ -113,8 +114,8 @@ public class CookieUtils {
 	 * @param response
 	 * @param name
 	 */
-	public static void removeCookie(HttpServletRequest request,HttpServletResponse response, String name) {
-		String domain = getDomain(request);
+	public static void removeCookie(HttpServletRequest request,HttpServletResponse response,  String name) {
+		String domain = request.getServerName();
 		removeCookie(request, response, name, domain);
 	}
 	/**
@@ -131,18 +132,11 @@ public class CookieUtils {
 		cookie.setMaxAge(0);
 		cookie.setValue("");
 		String ctx = request.getContextPath();
-		cookie.setPath(StringUtils.isBlank(ctx) ? "/" : ctx);
-		if (StringUtils.isNotBlank(domain)) {
+		cookie.setPath(BaseUtils.isBlank(ctx) ? "/" : ctx);
+		if (BaseUtils.isNotBlank(domain)) {
 			cookie.setDomain(domain);
 		}
 		response.addCookie(cookie);
 	}
-	/**
-	 * 获取当前域名
-	 * @param request
-	 */
-	public static String getDomain(HttpServletRequest request) {
-	     String serverName = request.getServerName();
-	     return serverName;
-	}
+	
 }

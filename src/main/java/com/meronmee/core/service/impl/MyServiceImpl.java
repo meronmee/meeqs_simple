@@ -75,7 +75,6 @@ public class MyServiceImpl implements MyService {
      * @param modelId 实体ID
 	 * @return Model类型实体对应的Map
 	 */
-    @Override
 	@Transactional(value=Const.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
 	public <T extends Model> Map<String, Object> retrieveMap(Class<T> modelClass, Long modelId) {	
 		if(modelClass == null || BaseUtils.isNull0(modelId)){
@@ -119,7 +118,6 @@ public class MyServiceImpl implements MyService {
 	 * @param propertyValue 参数值, 如果是List类型，则会使用IN查询
 	 * @return Model类型实体对应的Map列表
 	 */
-    @Override
 	@Transactional(value=Const.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
 	public <T extends Model> List<Map<String, Object>> findMapByProperty(Class<T> modelClass, String propertyName, Object propertyValue){
 		if(modelClass == null || BaseUtils.isBlank(propertyName) || propertyValue==null){
@@ -165,6 +163,50 @@ public class MyServiceImpl implements MyService {
 		
 		return result;
 	}
+	/**
+	 * 根据某个属性查询一个实体Map
+	 * @param modelClass 实体类
+	 * @param propertyName 参数名
+	 * @param propertyValue 参数值
+	 * @return Model类型实体对应的Map
+	 */
+	@Transactional(value=Const.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
+	public <T extends Model> Map<String, Object> findOneMapByProperty(Class<T> modelClass, String propertyName, Object propertyValue){
+		if(modelClass == null || StringUtils.isBlank(propertyName) || propertyValue==null){
+			return null;
+		}
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("tableName", this.getTableName(modelClass));
+		params.put("selectColumnNames", this.getSelectColumnNames(modelClass));
+		params.put("columnName", this.getColumnName(modelClass, propertyName));
+		params.put("columnValue", propertyValue);
+				
+		Map<String, Object> map = this.commonDao.findOne(SqlKey.common_findOneByProperty, params);
+		
+		return map;
+	}
+	
+	/**
+	 * 根据某个属性查询一个实体
+	 * @param modelClass 实体类
+	 * @param propertyName 参数名
+	 * @param propertyValue 参数值
+	 * @return Model类型实体
+	 */
+    @Override
+	@Transactional(value=Const.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
+	public <T extends Model> T findOneModelByProperty(Class<T> modelClass, String propertyName, Object propertyValue){
+		if(modelClass == null || StringUtils.isBlank(propertyName) || propertyValue==null){
+			return null;
+		}
+		
+		Map<String, Object> map = this.findOneMapByProperty(modelClass, propertyName, propertyValue);
+		
+		T model = mapToModel(modelClass, map);
+		
+		return model;
+	}
     
     /**
 	 * 根据一组属性不分页查询实体Map列表
@@ -172,7 +214,6 @@ public class MyServiceImpl implements MyService {
 	 * @param params 参数键值对, 多个参数之间是 AND 关系。为null或为空查询全部
 	 * @return Model类型实体对应的Map列表
 	 */
-    @Override
 	@Transactional(value=Const.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
 	public <T extends Model> List<Map<String, Object>> findMapByProps(Class<T> modelClass, Map<String, Object> params){
 		if(modelClass==null){
@@ -221,50 +262,58 @@ public class MyServiceImpl implements MyService {
 		return result;
 	}
 
-	/**
-	 * 根据某个属性查询一个实体Map
+    /**
+	 * 根据一组属性查询一个实体
 	 * @param modelClass 实体类
-	 * @param propertyName 参数名
-	 * @param propertyValue 参数值
-	 * @return Model类型实体对应的Map
+	 * @param params 参数键值对, 多个参数之间是 AND 关系。为null或为空查询全部
+	 * @return Model类型实体对应的Map列表
 	 */
-    @Override
 	@Transactional(value=Const.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
-	public <T extends Model> Map<String, Object> findOneMapByProperty(Class<T> modelClass, String propertyName, Object propertyValue){
-		if(modelClass == null || StringUtils.isBlank(propertyName) || propertyValue==null){
+	public <T extends Model> Map<String, Object> findOneMapByProps(Class<T> modelClass, Map<String, Object> params){
+		if(modelClass==null){
 			return null;
 		}
-		
-		Map<String, Object> params = new HashMap<>();
-		params.put("tableName", this.getTableName(modelClass));
-		params.put("selectColumnNames", this.getSelectColumnNames(modelClass));
-		params.put("columnName", this.getColumnName(modelClass, propertyName));
-		params.put("columnValue", propertyValue);
+
+		List<Map<String, Object>> pairs = new LinkedList<>();
+		if(params!=null && !params.isEmpty()){
+	        for (Entry<String, Object> entry : params.entrySet()) {	            
+	            String columnName = this.getColumnName(modelClass, entry.getKey());
+	
+	            Map<String, Object> pair = new HashMap<>();
+	            pair.put("columnName", columnName);
+	            pair.put("columnValue", entry.getValue());
+	            
+	            pairs.add(pair);
+	        } 		
+		}
+
+		Map<String, Object> sqlParams = new HashMap<>();
+		sqlParams.put("tableName", this.getTableName(modelClass));
+		sqlParams.put("selectColumnNames", this.getSelectColumnNames(modelClass));
+		sqlParams.put("pairs", pairs);	
 				
-		Map<String, Object> map = this.commonDao.findOne(SqlKey.common_findOneByProperty, params);
+		Map<String, Object> map = this.commonDao.findOne(SqlKey.common_findOneByProps, sqlParams);
 		
 		return map;
 	}
-	
-	/**
-	 * 根据某个属性查询一个实体
+    
+    /**
+	 * 根据一组属性查询一个实体
 	 * @param modelClass 实体类
-	 * @param propertyName 参数名
-	 * @param propertyValue 参数值
-	 * @return Model类型实体
-	 */
+	 * @param params 参数键值对, 多个参数之间是 AND 关系。为null或为空查询全部
+   	 * @return Model类型实体列表
+   	 */
     @Override
 	@Transactional(value=Const.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
-	public <T extends Model> T findOneModelByProperty(Class<T> modelClass, String propertyName, Object propertyValue){
-		if(modelClass == null || StringUtils.isBlank(propertyName) || propertyValue==null){
+	public <T extends Model> T findOneModelByProps(Class<T> modelClass, Map<String, Object> params){
+    	if(modelClass==null){
 			return null;
 		}
+						
+    	Map<String, Object> map = this.findOneMapByProps(modelClass, params);
+		T result = mapToModel(modelClass, map);
 		
-		Map<String, Object> map = this.findOneMapByProperty(modelClass, propertyName, propertyValue);
-		
-		T model = mapToModel(modelClass, map);
-		
-		return model;
+		return result;
 	}
 
 	/**

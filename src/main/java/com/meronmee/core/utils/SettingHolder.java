@@ -19,9 +19,12 @@ import org.springframework.core.io.ClassPathResource;
  *
  */
 public class SettingHolder {
-    public static final Logger LOG = LoggerFactory.getLogger(SettingHolder.class);
-    
-    private static final Map<String, String> PROPERTIES = new HashMap<>();
+    public static final Logger LOG = LoggerFactory.getLogger(SettingHolder.class);  
+    private static final String[] configFiles = {
+			 "/config/setting.common.properties" //src/main/resources/config/setting.common.properties - 各环境公共的配置信息
+    		,"/config/setting.properties" //src/main/resources/config/setting.properties - 各环境差异化的配置信息
+	};  
+    private static Map<String, String> props = new HashMap<>();
 
     static {
         init();
@@ -33,24 +36,27 @@ public class SettingHolder {
      * @param map
      */
     private static void load(InputStream inputStream, Map<String, String> map){
-        try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"))){
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"))){
             String line;
             while((line = reader.readLine()) != null){
                 line = line.trim();
-                if("".equals(line) || line.startsWith("#")){
+                if("".equals(line) || "=".equals(line) || line.startsWith("#")){
                     continue;
                 }
                 int index = line.indexOf("=");
-                if(index==-1){
-                    LOG.error("错误的配置："+line);
+                if(index == -1){
+                    LOG.error("错误的配置项："+line);
                     continue;
                 }
-                if(index>0 && line.length()>index+1) {
+                if(index > 0) {                	
                     String key = line.substring(0, index).trim();
-                    String value = BaseUtils.decodeUnicode(line.substring(index + 1, line.length()).trim());
-                    map.put(key, value);
+                    String value = "";
+                    if(line.length() > index+1){
+                    	value = BaseUtils.decodeUnicode(line.substring(index + 1, line.length()).trim());
+                    }
+                    map.put(key, value);   
                 }else{
-                    LOG.error("错误的配置："+line);
+                    LOG.error("无效的配置项："+line);
                 }
             }
         } catch (IOException ex) {
@@ -62,19 +68,18 @@ public class SettingHolder {
     /**
      * 初始化配置信息
      */
-    private static void init() {
-    		String[] configFiles = {
-    			"/config/setting.properties" //src/main/resources/config/setting.properties
-    		};
-    	
+    private static void init() {    		
+    		props.clear();
+    		
             ClassPathResource cr = null;
             for(String file : configFiles){
                 try{
+                    LOG.info("加载配置文件[{}]...", file);
                     cr = new ClassPathResource(file);
-                    load(cr.getInputStream(), PROPERTIES);
-                    LOG.info("装入配置文件:"+file);
+                    load(cr.getInputStream(), props);
+                    LOG.info("加载配置文件[{}]完成.", file);
                 } catch(Exception e){
-                    LOG.info("装入配置文件"+file+"失败!", e);
+                    LOG.error("装入配置文件[{}]失败!", file, e);
                 }
             }
     }
@@ -91,7 +96,7 @@ public class SettingHolder {
      * @return
      */
     public static Map<String, String> getProperties() {
-        return PROPERTIES;
+        return props;
     }
     
     /**
@@ -100,7 +105,7 @@ public class SettingHolder {
      * @param value
      */
     public static void setProperty(String name, Object value) {
-        PROPERTIES.put(name, String.valueOf(value));
+        props.put(name, String.valueOf(value));
     }
     
     //--------------------
@@ -109,7 +114,7 @@ public class SettingHolder {
      * @param name 配置文件中的参数名
      */
     private static String getProperty(String name) {
-    	String config = PROPERTIES.get(name);
+    	String config = props.get(name);
         return config;
     }
     /**
@@ -118,7 +123,7 @@ public class SettingHolder {
      * @return
      */
     private static String getProperty(String name, String defaultValue) {
-        String config = PROPERTIES.get(name);
+        String config = props.get(name);
         if(StringUtils.isBlank(config)){
         	return defaultValue;
         }
@@ -144,7 +149,7 @@ public class SettingHolder {
      * @return
      */
     public static Integer getInteger(String name) {
-    	String config = PROPERTIES.get(name);
+    	String config = props.get(name);
         return BaseUtils.toInteger(config);
     }
     /**
@@ -153,7 +158,7 @@ public class SettingHolder {
      * @return
      */
     public static Integer getInteger(String name, Integer defaultValue) {
-    	String config = PROPERTIES.get(name);
+    	String config = props.get(name);
         Integer value = BaseUtils.toInteger(config);
         if(value == null){
         	value = defaultValue;
@@ -165,7 +170,7 @@ public class SettingHolder {
      * @return
      */
     public static Long getLong(String name) {
-    	String config = PROPERTIES.get(name);
+    	String config = props.get(name);
         return BaseUtils.toLong(config);
     }
     /**
@@ -174,7 +179,7 @@ public class SettingHolder {
      * @return
      */
     public static Long getLong(String name, Long defaultValue) {
-    	String config = PROPERTIES.get(name);
+    	String config = props.get(name);
         Long value = BaseUtils.toLong(config);
         if(value == null){
         	value = defaultValue;
@@ -186,7 +191,7 @@ public class SettingHolder {
      * @return
      */
     public static Float getFloat(String name) {
-    	String config = PROPERTIES.get(name);
+    	String config = props.get(name);
         return BaseUtils.toFloat(config);
     }
     /**
@@ -195,7 +200,7 @@ public class SettingHolder {
      * @return
      */
     public static Float getFloat(String name, Float defaultValue) {
-    	String config = PROPERTIES.get(name);
+    	String config = props.get(name);
     	Float value = BaseUtils.toFloat(config);
         if(value == null){
         	value = defaultValue;
@@ -207,7 +212,7 @@ public class SettingHolder {
      * @return
      */
     public static Double getDouble(String name) {
-    	String config = PROPERTIES.get(name);
+    	String config = props.get(name);
         return BaseUtils.toDouble(config);
     }
     /**
@@ -216,7 +221,7 @@ public class SettingHolder {
      * @return
      */
     public static Double getDouble(String name, Double defaultValue) {
-    	String config = PROPERTIES.get(name);
+    	String config = props.get(name);
     	Double value = BaseUtils.toDouble(config);
         if(value == null){
         	value = defaultValue;
@@ -228,7 +233,7 @@ public class SettingHolder {
      * @return
      */
     public static Boolean getBoolean(String name) {
-    	String config = PROPERTIES.get(name);
+    	String config = props.get(name);
         return BaseUtils.toBoolean(config);
     }
     /**
@@ -237,7 +242,7 @@ public class SettingHolder {
      * @return
      */
     public static Boolean getBoolean(String name, Boolean defaultValue) {
-    	String config = PROPERTIES.get(name);
+    	String config = props.get(name);
     	Boolean value = BaseUtils.toBoolean(config);
         if(value == null){
         	value = defaultValue;

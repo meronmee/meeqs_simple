@@ -6,7 +6,10 @@ package com.meronmee.core.dto;
  */
 public class Failure extends JsonResult{
 	private static final long serialVersionUID = -4947169183770256483L;
-
+	/**
+	 *  Ajax请求失败时返回数据封装类<p>
+	 *  {"code":400, "msg":"操作失败", "data":... }
+	 */
 	public Failure(){
 		this.setCode(JsonResult.Code.ERROR).setMsg("Failure");
 	}

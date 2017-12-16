@@ -1,8 +1,7 @@
 package com.meronmee.demo.example;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,10 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.meronmee.base.dao.UserDao;
 import com.meronmee.base.model.User;
 import com.meronmee.base.service.UserService;
-import com.meronmee.core.controller.BaseAction;
+import com.meronmee.base.controller.BaseAction;
 import com.meronmee.core.dao.helper.Pager;
 import com.meronmee.core.dao.helper.SqlKey;
 import com.meronmee.core.dto.JsonResult;
@@ -47,7 +45,7 @@ public class BaseExampleAction extends BaseAction{
 	/**
 	 * 页面请求
 	 */
-    @RequestMapping(value = "/example/error.htm",  method = RequestMethod.GET)
+    @RequestMapping(value = "/demo/example/error.htm",  method = RequestMethod.GET)
     public String testPage(HttpServletRequest request, HttpServletResponse response, ModelMap viewData) {   
     	//使用RequestUtils.get*Param获取各种类型（包括文件类型）的参数
         String msg = RequestUtils.getStringParam(request, "msg");
@@ -68,7 +66,7 @@ public class BaseExampleAction extends BaseAction{
 	/**
 	 *页面请求 - 带路径变量
 	 */
-    @RequestMapping(value = "/example/{page}.htm", method = RequestMethod.GET)
+    @RequestMapping(value = "/demo/example/{page}.htm", method = RequestMethod.GET)
     public String testPageVar(@PathVariable("page") String page, HttpServletRequest request, HttpServletResponse response, ModelMap viewData) {   
         Assert.isNotBlank(page, "page不能为空");        
         
@@ -78,15 +76,15 @@ public class BaseExampleAction extends BaseAction{
     /**
 	 * 含有重定向的面请求
 	 */    
-    @RequestMapping(value = "/example/redirect.htm", method = RequestMethod.GET)
+    @RequestMapping(value = "/demo/example/redirect.htm", method = RequestMethod.GET)
     public String testPageRedirect(HttpServletRequest request, HttpServletResponse response, ModelMap viewData) {    	
         String msg = RequestUtils.getStringParam(request, "msg");
         
         if(StringUtils.isBlank(msg)){
         	//重定向时viewData中的参数会被当做url的querystring
-        	//下面两行等价于return "redirect:/example/example.htm?msg=redirect";
+        	//下面两行等价于return "redirect:/demo/example/demo/example.htm?msg=redirect";
             viewData.put("msg", "redirect");
-        	return "redirect:/example/error.htm";        	
+        	return "redirect:/demo/example/error.htm";        	
         }
         
         viewData.put("errMsg", msg);
@@ -96,7 +94,7 @@ public class BaseExampleAction extends BaseAction{
     /**
 	 * Ajax请求
 	 */ 
-    @RequestMapping(value = "/example/example.json", method = RequestMethod.POST)
+    @RequestMapping(value = "/demo/example/ajax.json", method = RequestMethod.POST)
     public JsonResult testAjax(HttpServletRequest request, HttpServletResponse response) {
     	String msg = RequestUtils.getStringParam(request, "msg");
         Assert.isNotBlank(msg, "msg不能为空");
@@ -109,7 +107,7 @@ public class BaseExampleAction extends BaseAction{
     /**
 	 * Ajax请求 - 响应客户端后还进行一些后续的处理
 	 */  
-    @RequestMapping(value = "/example/retfirst.json", method = RequestMethod.POST)
+    @RequestMapping(value = "/demo/example/retfirst.json", method = RequestMethod.POST)
     //返回值不再是JsonResult，而是void
     public void testAjaxReturnFirst(HttpServletRequest request, HttpServletResponse response) {
     	String msg = RequestUtils.getStringParam(request, "msg");
@@ -128,7 +126,7 @@ public class BaseExampleAction extends BaseAction{
     /**
 	 * 文件上传
 	 */ 
-    @RequestMapping(value = "/example/file.json", method = RequestMethod.POST)
+    @RequestMapping(value = "/demo/example/file.json", method = RequestMethod.POST)
     public JsonResult testFile(HttpServletRequest request, HttpServletResponse response) {
     	//html表单提交的话，需要将form设为 enctype="multipart/form-data"
     	MultipartFile file = RequestUtils.getFileParam(request, "attach");//attach未客户端提交的单文件字段名称
@@ -168,7 +166,7 @@ public class BaseExampleAction extends BaseAction{
 	 * 
 	 * MyBatis数据库查询 - 1、使用公共接口面向 Model 对象的增删改查<p>
 	 */
-    @RequestMapping(value = "/example/db/model.json", method = RequestMethod.POST)
+    @RequestMapping(value = "/demo/example/db/model.json", method = RequestMethod.POST)
     public JsonResult testDBModel(HttpServletRequest request, HttpServletResponse response) {
     	/*
     	 * 
@@ -205,9 +203,9 @@ public class BaseExampleAction extends BaseAction{
     	
 
     	
-    	Map<String, Object> params = new HashMap<>();
+    	Map<String, Object> params = new LinkedHashMap<>();
     	params.put("password", "111111");    
-    	params.put("sex", 3);    		
+    	params.put("sex", 3);
     	List<User> list = this.service.findModelByProps(User.class, params);    	
        	return new Success(list);
        	
@@ -223,7 +221,7 @@ public class BaseExampleAction extends BaseAction{
     /**
 	 * MyBatis数据库查询 - 2、使用公共接口引用 SQL 语句的增删改查<p>
    	 */ 
-    @RequestMapping(value = "/example/db/sql.json", method = RequestMethod.POST)
+    @RequestMapping(value = "/demo/example/db/sql.json", method = RequestMethod.POST)
     public JsonResult testDBSql(HttpServletRequest request, HttpServletResponse response) {
     	
     	/*
@@ -274,7 +272,7 @@ public class BaseExampleAction extends BaseAction{
 	 * MyBatis数据库查询 - 2、使用公共接口引用 SQL 语句的增删改查<p>
 	 * 特例：使用存储过程
 	 */
-	@RequestMapping(value = "/example/db/proc.json", method = RequestMethod.POST)
+	@RequestMapping(value = "/demo/example/db/proc.json", method = RequestMethod.POST)
 	public JsonResult testProc(HttpServletRequest request, HttpServletResponse response) {
 			//参数校验
 			Map<String, Object> map = new HashMap<>();
@@ -293,7 +291,7 @@ public class BaseExampleAction extends BaseAction{
 	 /**
 	 * MyBatis数据库查询 - 3、使用 DAO 引用 SQL 语句的增删改查<p>
    	 */ 
-    @RequestMapping(value = "/example/db/dao.json", method = RequestMethod.POST)
+    @RequestMapping(value = "/demo/example/db/dao.json", method = RequestMethod.POST)
     public JsonResult testDBDao(HttpServletRequest request, HttpServletResponse response) {    	
     	List<User> list = this.userService.getUserList(5, 3);
     	return new Success(list);    	

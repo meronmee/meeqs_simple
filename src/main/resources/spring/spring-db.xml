@@ -94,8 +94,8 @@
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <!--注入SqlSessionFactory-->
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
-        <!-- 给出需要扫描的Dao接口-->
-        <property name="basePackage" value="com.meronmee.base.dao"/>
+        <!-- 给出需要扫描的Dao接口,多个用;隔开-->
+        <property name="basePackage" value="com.meronmee.base.dao;com.meronmee.app.dao;com.meronmee.manage.dao"/>
     </bean>  
     <!--4、配置sqlSessionTemplate-->
     <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">         

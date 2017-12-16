@@ -15,7 +15,7 @@ import com.meronmee.core.model.Model;
  *  	<li>引用 SQL 语句的增删改查</li>
  *  
  * <h3>一、面向 Model 对象的增删改查</h3>
- * {@literal 此类接口的方法名称都有Map或Model，第一个参数都是Class<T> modelClass}<p>
+ * {@literal 此类接口的方法名称都有Model，第一个参数都是Class<T> modelClass}<p>
  * 
  * 使用此类接口的前提是：<p>
  * <li>实体必须继承com.meronmee.core.model.Model</li>
@@ -37,15 +37,7 @@ public interface MyService{
 
 	/*----------------------------------------*
 	 * 		1、面向 Model 对象的增删改查		  *
-	 *----------------------------------------*/
-	/**
-	 * 根据ID查询实体Map
-	 * @param modelClass 实体类
-     * @param modelId 实体ID
-	 * @return Model类型实体
-	 */
-	public <T extends Model> Map<String, Object> retrieveMap(Class<T> modelClass, Long modelId);
-	
+	 *----------------------------------------*/	
 	/**
 	 * 根据ID查询实体
 	 * @param modelClass 实体类
@@ -56,14 +48,6 @@ public interface MyService{
 	
 	
 	/**
-	 * 根据某个属性不分页查询实体Map列表
-	 * @param modelClass 实体类
-	 * @param propertyName 参数名
-	 * @param propertyValue 参数值, 如果是List类型，则会使用IN查询
-	 * @return Model类型实体列表
-	 */
-	public <T extends Model> List<Map<String, Object>> findMapByProperty(Class<T> modelClass, String propertyName, Object propertyValue);
-	/**
 	 * 根据某个属性不分页查询实体列表
 	 * @param modelClass 实体类
 	 * @param propertyName 参数名
@@ -72,31 +56,7 @@ public interface MyService{
 	 */
 	public <T extends Model> List<T> findModelByProperty(Class<T> modelClass, String propertyName, Object propertyValue);
 
-	/**
-	 * 根据一组属性不分页查询实体Map列表
-	 * @param modelClass 实体类
-	 * @param params 参数键值对, 多个参数之间是 AND 关系。为null或为空查询全部
-	 * @return Model类型实体对应的Map列表
-	 */
-	public <T extends Model> List<Map<String, Object>> findMapByProps(Class<T> modelClass, Map<String, Object> params);
-	
-	/**
-	 * 根据一组属性不分页查询实体Map列表
-	 * @param modelClass 实体类
-	 * @param params 参数键值对, 多个参数之间是 AND 关系。为null或为空查询全部
-   	 * @return Model类型实体列表
-   	 */
-	public <T extends Model> List<T> findModelByProps(Class<T> modelClass, Map<String, Object> params);
-	
-	/**
-	 * 根据某个属性查询一个实体Map
-	 * @param modelClass 实体类
-	 * @param propertyName 参数名
-	 * @param propertyValue 参数值
-	 * @return Model类型实体
-	 */
-	public <T extends Model> Map<String, Object> findOneMapByProperty(Class<T> modelClass, String propertyName, Object propertyValue);
-	
+		
 	/**
 	 * 根据某个属性查询一个实体
 	 * @param modelClass 实体类
@@ -106,6 +66,23 @@ public interface MyService{
 	 */
 	public <T extends Model> T findOneModelByProperty(Class<T> modelClass, String propertyName, Object propertyValue);
 
+	/**
+	 * 根据一组属性不分页查询实体Map列表
+	 * @param modelClass 实体类
+	 * @param params 参数键值对, 多个参数之间是 AND 关系。为null或为空查询全部
+   	 * @return Model类型实体列表
+   	 */
+	public <T extends Model> List<T> findModelByProps(Class<T> modelClass, Map<String, Object> params);
+	
+	
+	/**
+	 * 根据一组属性查询一个实体
+	 * @param modelClass 实体类
+	 * @param params 参数键值对, 多个参数之间是 AND 关系。为null或为空查询全部
+   	 * @return Model类型实体列表
+   	 */
+	public <T extends Model> T findOneModelByProps(Class<T> modelClass, Map<String, Object> params);
+	
 	/**
 	 * 新增一条实体
 	 * @param modelClass 实体类

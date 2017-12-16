@@ -28,7 +28,12 @@ public class JsonResult implements Serializable {
      * 成功或失败返回的主体数据
      */
     private Object data;
+    
 
+    /**
+     * JSON过滤器
+     */
+    private SerializeFilter[] filters;
     
     public JsonResult(){
     }
@@ -68,6 +73,16 @@ public class JsonResult implements Serializable {
 		return this;		
 	}	
 	
+	/**
+	 * 添加过滤器
+	 * @param filters
+	 * @return
+	 */
+	public JsonResult addFilter(final SerializeFilter... filters) {
+		this.filters = filters;
+		return this;		
+	}	
+	
 	@Override
 	public String toString() {
 		return BaseUtils.join("JsonResult [code=", this.getCodeValue(), ", msg=", this.getMsg(), ", data=", this.getData(), "]");
@@ -77,7 +92,7 @@ public class JsonResult implements Serializable {
 	 * 转换为JSON字符串
 	 * @return 格式：{"code":200, "msg":"操作成功", "data":... }
 	 */
-	public String toJson(final SerializeFilter... filters) {
+	public String toJson() {
 		JSONObject json = new JSONObject();
 		json.put("code", this.getCodeValue());
 		json.put("msg", this.getMsg());

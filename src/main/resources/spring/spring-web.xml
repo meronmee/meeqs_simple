@@ -77,7 +77,8 @@
         <property name="cache" value="true" />  
         <property name="prefix" value="" />  
         <property name="suffix" value=".html" />  
-        <property name="requestContextAttribute" value="request" />  
+        <property name="requestContextAttribute" value="request" /> 
+        <!-- request/session==true时，请求和会话属性都被复制到模板的属性集合中。我们这里选择关闭之。 --> 
         <property name="exposeSpringMacroHelpers" value="false" />  
         <property name="exposeRequestAttributes" value="false" />  
         <property name="exposeSessionAttributes" value="false" />  

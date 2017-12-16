@@ -10,6 +10,8 @@
 	</configs>
 	<autoconfigs>
 		<config>src/main/resources/spring/spring-web.xml</config>
+		<config>src/main/resources/spring/spring-db.xml</config>
+		<config>src/main/resources/spring/spring-core.xml</config>
 	</autoconfigs>
 	<configSets>
 	</configSets>

@@ -12,11 +12,14 @@ public enum SqlKey {
 	/** Common - 根据某个属性不分页查询实体列表 */
 	common_findByProperty("commonMapper.findByProperty"),
 	
+	/** Common - 根据某个属性查询一个实体 */
+	common_findOneByProperty("commonMapper.findOneByProperty"),
+	
 	/** Common - 根据一组属性不分页查询实体列表 */
 	common_findByProps("commonMapper.findByProps"),
 	
-	/** Common - 根据某个属性查询一个实体 */
-	common_findOneByProperty("commonMapper.findOneByProperty"),
+	/** Common - 根据一组属性查询一个实体 */
+	common_findOneByProps("commonMapper.findOneByProps"),
 	
 	/** Common - 新增一条表记录 */
 	common_create("commonMapper.create"),

@@ -14,15 +14,16 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		
 		<!-- dependency version -->
+		<spring.version>5.0.2.RELEASE</spring.version>
+		<shiro.version>1.3.2</shiro.version>
 		<junit.version>4.8.2</junit.version>
 		<commons-lang3.version>3.6</commons-lang3.version>
 		<guava.version>23.3-jre</guava.version>
 		<fastjson.version>1.2.41</fastjson.version>
-		<spring.version>5.0.2.RELEASE</spring.version>
 		<freemarker.version>2.3.27-incubating</freemarker.version>
 		<slf4j.version>1.7.25</slf4j.version>
-		<logback.version>1.2.3</logback.version>
 		
+		<logback.version>1.2.3</logback.version>
 		<!-- plugin version -->
 		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
 		<maven-war-plugin.version>2.6</maven-war-plugin.version>
@@ -99,7 +100,7 @@
 		<!-- 日志 end -->
 		
 				
-		<!-- spring start -->
+		<!-- SpringCore start -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
@@ -145,9 +146,9 @@
 			<artifactId>spring-test</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		<!-- spring end -->
+		<!-- SpringCore end -->
 
-		<!-- springmvc 控制层 start -->
+		<!-- SpringMVC 控制层 start -->
 		<dependency>
 			<groupId>jstl</groupId>
 			<artifactId>jstl</artifactId>
@@ -188,16 +189,38 @@
 		  <artifactId>commons-fileupload</artifactId>
 		  <version>1.3.3</version>
 		</dependency>
-		<!-- springmvc 控制层 start -->
+		<!-- shiro 访问控制 start -->
+		<dependency> 
+		  <groupId>org.apache.shiro</groupId>
+		  <artifactId>shiro-core</artifactId>
+		  <version>${shiro.version}</version>
+		</dependency>
+		 <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-web</artifactId>
+		  	<version>${shiro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-spring</artifactId>
+		  	<version>${shiro.version}</version>
+        </dependency>
+        <dependency> 
+		  <groupId>org.apache.shiro</groupId> 
+		  <artifactId>shiro-ehcache</artifactId> 
+		  <version>${shiro.version}</version> 
+		</dependency>
+		<!-- shiro 访问控制 end -->        
+		<!-- SpringMVC 控制层 end -->
 
-		<!-- mybatis 数据访问层 start -->
+		<!-- MyBatis 数据访问层 start -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.38</version>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
+		<dependency> <!-- Druid数据源 -->
 	        <groupId>com.alibaba</groupId>
 	        <artifactId>druid</artifactId>
 	        <version>1.1.5</version>
@@ -217,12 +240,12 @@
 			<artifactId>mybatis-spring</artifactId>
 			<version>1.3.1</version>
 		</dependency>
-		<dependency>
+		<dependency> <!-- 分页插件 -->
 		  <groupId>com.github.pagehelper</groupId>
 		  <artifactId>pagehelper</artifactId>
 		  <version>5.1.2</version>
 		</dependency>
-		<!-- mybatis 数据访问层 end -->	
+		<!-- MyBatis 数据访问层 end -->	
 
 	</dependencies>
 

@@ -20,6 +20,13 @@
     <aop:aspectj-autoproxy proxy-target-class="true" />
    
     <!-- properties 文件 -->
-    <context:property-placeholder location="classpath:config/system.properties" ignore-unresolvable="true"/>
-   
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	    <property name="ignoreUnresolvablePlaceholders" value="true"/>
+	    <property name="locations">
+            <list>
+                <value>classpath:config/system.common.properties</value>
+                <value>classpath:config/system.properties</value>
+            </list>
+	    </property>
+	</bean>
 </beans>
