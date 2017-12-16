@@ -9,7 +9,6 @@
 
 	<!-- 定义常量 -->
 	<properties>
-		<java.home>D:\Dev\Java\jdk1.8.0_51</java.home>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		
