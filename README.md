@@ -5,8 +5,6 @@
 - Mybatis（封装公共操作 + 最少配置方案）
 - 统一的异常处理
 - Druid（数据源配置 sql性能监控)
-- Sping Shiro权限控制（待完善）
-- Quartz时间调度（待完善）
 
 # 目录结构
 <pre>
