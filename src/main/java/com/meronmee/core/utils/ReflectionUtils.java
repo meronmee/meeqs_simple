@@ -213,18 +213,6 @@ public class ReflectionUtils{
     		return null;
     	}
     }
-    /**
-     * 优先使用Getter方法读取字段值，如果失败再直接读取(无视private/protected修饰符)
-     */
-    public static Object getFieldValueByGetter(final Object object, final Field field) {
-    	return getFieldValue(object, field);
-    }
-    /**
-     * 优先使用Getter方法读取字段值，如果失败再直接读取(无视private/protected修饰符)
-     */
-    public static Object getFieldValueByGetter(final Object object, final String fieldName) {
-    	return getFieldValue(object, fieldName);
-    }
     
     /**
      * 直接读取对象属性值,无视private/protected修饰符,不经过getter函数.
@@ -309,7 +297,11 @@ public class ReflectionUtils{
     /**
      * 直接设置对象属性值,无视private/protected修饰符,不经过setter函数.
      */
-    public static <T> void setFieldValue(final T object, final Field field, final Object value) {
+    public static <T> void setFieldValueDirectly(final T object, final Field field, final Object value) {
+    	if (field == null) {
+    		return;
+    	}
+    	
         makeAccessible(field);
 
         try {
@@ -322,29 +314,16 @@ public class ReflectionUtils{
     /**
      * 直接设置对象属性值,无视private/protected修饰符,不经过setter函数.
      */
-    public static <T> void setFieldValue(final T object, final String fieldName, final Object value) {
-        try{
-            Field field = getDeclaredField(object, fieldName);
-
-            if (field == null) {
-                throw new IllegalArgumentException("Could not find field [" + fieldName + "] on target [" + object + "]");
-            }
-            setFieldValue(object,field,value);
-        }catch(Exception e){  
-            String methodName="set"+Character.toUpperCase(fieldName.charAt(0))+fieldName.substring(1);
-            try {
-                Method method=object.getClass().getMethod(methodName,value.getClass());
-                method.invoke(object,value);
-            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                LOG.error("Could not exec method [" + methodName + "] on target [" + object + "]",ex);
-            }
-        }
+    public static <T> void setFieldValueDirectly(final T object, final String fieldName, final Object value) {
+        Field field = getDeclaredField(object, fieldName);
+        setFieldValueDirectly(object,field,value);       
     }
+    
     /**
      * 设置对象属性值
-     * 先尝试使用经过setter函数，否则直接设置对象属性值,无视private/protected修饰符.
+     * 先尝试使用经过setter函数，失败的话再直接设置对象属性值,无视private/protected修饰符.
      */
-    public static <T> void setFieldValueBySetter(final T object, final String fieldName, final Object value) {
+    public static <T> void setFieldValue(final T object, final String fieldName, final Object value) {
     	 String methodName="set"+Character.toUpperCase(fieldName.charAt(0))+fieldName.substring(1);
          try {
              Method method=object.getClass().getMethod(methodName,value.getClass());
@@ -352,11 +331,7 @@ public class ReflectionUtils{
          } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
         	 try{
                  Field field = getDeclaredField(object, fieldName);
-
-                 if (field == null) {
-                     throw new IllegalArgumentException("Could not find field [" + fieldName + "] on target [" + object + "]");
-                 }
-                 setFieldValue(object,field,value);
+                 setFieldValueDirectly(object,field,value);
              }catch(Exception e){  
             	 LOG.error("Could not exec method [" + methodName + "] on target [" + object + "]",ex);                
              }
@@ -365,25 +340,14 @@ public class ReflectionUtils{
     }
     /**
      * 设置对象属性值
-     * 先尝试使用经过setter函数，否则直接设置对象属性值,无视private/protected修饰符.
+     * 先尝试使用经过setter函数，失败的话再直接设置对象属性值,无视private/protected修饰符.
      */
-    public static <T> void setFieldValueBySetter(final T object, final Field field, final Object value) {
-    	 if (field == null) {
+    public static <T> void setFieldValue(final T object, final Field field, final Object value) {
+    	 if(field == null) {
     		return;
     	 }
     	 String fieldName = field.getName();
-    	 String methodName="set"+Character.toUpperCase(fieldName.charAt(0))+fieldName.substring(1);
-         try {
-             Method method=object.getClass().getMethod(methodName,value.getClass());
-             method.invoke(object,value);
-         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-        	 try{
-                 setFieldValue(object,field,value);
-             }catch(Exception e){  
-            	 LOG.error("Could not exec method [" + methodName + "] on target [" + object + "]",ex);                
-             }
-         }        
-        
+    	 setFieldValue(object, fieldName, value);
     }
 
     /**
@@ -526,9 +490,9 @@ public class ReflectionUtils{
 				if(from instanceof Map){
 					value = ((Map)from).get(fromProp);
 				} else {
-					value = getFieldValueByGetter(from, fromProp);
+					value = getFieldValue(from, fromProp);
 				}
-				setFieldValueBySetter(to, toProp, value);
+				setFieldValue(to, toProp, value);
 			}catch(Exception e){
 				continue;
 			}

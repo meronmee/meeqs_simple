@@ -2,7 +2,9 @@ package com.meronmee.core.shiro;
 
 import org.apache.shiro.authc.credential.SimpleCredentialsMatcher;
 
+import com.meronmee.core.commons.Const;
 import com.meronmee.core.utils.BaseUtils;
+import com.meronmee.core.utils.EncryptUtil;
 
 /**
  * 自定义密码验证器
@@ -33,7 +35,8 @@ public class CustomCredentialsMatcher extends SimpleCredentialsMatcher {
         String userPassword = BaseUtils.toString(accountCredentials);//String类型的
         
         //可以在此进行MD5等加密处理
-        //...
+        //String cryptedPassword = EncryptUtil.md5(inputPassword, Const.MESSAGE_DIGEST_SALT);
+        //return cryptedPassword.equalsIgnoreCase(userPassword);
         
 		return inputPassword.equalsIgnoreCase(userPassword);
 	}

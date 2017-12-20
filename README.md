@@ -11,11 +11,15 @@
 # 目录结构
 <pre>
 |--src/main/java		- Java主程序目录
-|	|-- com.meronmee.
-|	`-- com.meronmee.demo	- 示例目录，打包发布时会排除
-|		|-- com.meronmee.demo.code		- 模板目录，一个小的代码库，贴近实际代码，直接copy使用
-|		|-- com.meronmee.demo.example	- 范例目录，注释讲解比较详细
-|		`-- com.meronmee.demo.test		- 测试目录
+|	|-- com.meronmee	- 基础包名，可以通过提供的工具ModifyBasePackage.java来修改
+|		|-- com.meronmee.core	- 核心代码包
+|		|-- com.meronmee.app	- 客户端相关代码包
+|		|-- com.meronmee.manage- 管理端相关代码包
+|		|-- com.meronmee.base	- app和manage公用的业务层代码包
+|		`-- com.meronmee.demo	- 示例目录，打包发布时会排除
+|			|-- com.meronmee.demo.code		- 模板目录，一个小的代码库，贴近实际代码，直接copy使用
+|			|-- com.meronmee.demo.example	- 范例目录，注释讲解比较详细
+|			`-- com.meronmee.demo.test		- 测试目录
 |
 |
 |--src/main/resources	- 主配置文件目录

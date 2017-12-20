@@ -41,12 +41,7 @@
 		</dependency>
 		<!-- 基础依赖 end -->
 		
-		<!-- 常用工具库 start -->
-		<dependency>
-		  <groupId>org.apache.commons</groupId>
-		  <artifactId>commons-lang3</artifactId>
-		  <version>${commons-lang3.version}</version>
-		</dependency>		
+		<!-- 常用工具库 start -->	
 		<dependency>
 		    <groupId>com.google.guava</groupId>
 		    <artifactId>guava</artifactId>
@@ -56,6 +51,21 @@
 		    <groupId>com.alibaba</groupId>
 		    <artifactId>fastjson</artifactId>
 		    <version>${fastjson.version}</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.apache.commons</groupId>
+		  <artifactId>commons-lang3</artifactId>
+		  <version>${commons-lang3.version}</version>
+		</dependency>
+		<dependency>
+		  <groupId>commons-codec</groupId>
+		  <artifactId>commons-codec</artifactId>
+		  <version>1.11</version>
+		</dependency>
+		<dependency>
+		  <groupId>com.squareup.okhttp3</groupId>
+		  <artifactId>okhttp</artifactId>
+		  <version>3.9.1</version>
 		</dependency>
 		<!-- 常用工具库 end -->
 		

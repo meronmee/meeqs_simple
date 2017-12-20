@@ -1596,6 +1596,10 @@ public final class BaseUtils {
 	public static <E> boolean isNotEmpty(Collection<E> c){
 		return !isEmpty(c);
 	}
+
+	public static <K,V> boolean isNotEmpty(Map<K, V> m){
+		return !isEmpty(m);
+	}
 	
 	/** 
 	 * 检测邮箱地址是否合法 
@@ -2100,11 +2104,13 @@ public final class BaseUtils {
 		}
 		return StringUtils.replace(str, "'", "\\'");
 	}
-	 public static String makeUUID(){
-		return uuid();
-	 }
+	
 	 public static String uuid(){
 		return java.util.UUID.randomUUID().toString();
+	 }
+	 
+	 public static String uuidShort(){
+			return uuid().replaceAll("-", "");
 	 }
 	 
 
@@ -2723,12 +2729,12 @@ public final class BaseUtils {
 	 * @param map
 	 * @return key1=1&key2=true
 	 */
-	public static String map2QueryString(Map<String, Object> map){
+	public static String map2QueryString(Map<String, ?> map){
 		if(map==null ||map.isEmpty()){
 			return "";
 		}
 		StringBuilder sb = new StringBuilder();
-		for(Map.Entry<String, Object> entry : map.entrySet()){
+		for(Map.Entry<String, ?> entry : map.entrySet()){
 			sb.append("&"+entry.getKey()+"="+URLEncoder(toString(entry.getValue(), "")));			
 		}
 		return sb.substring(1);

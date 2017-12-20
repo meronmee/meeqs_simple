@@ -11,4 +11,9 @@ public class Const {
 	 * @see src/main/resources/spring/spring-db.xml#transactionManager
 	 */
 	public static final String MYBATIS_TRANSACTION_MANAGER = "transactionManager";
+	
+	/**
+	 * MD5、SHA1等加密盐
+	 */
+	public static final String MESSAGE_DIGEST_SALT = "";
 }

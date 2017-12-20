@@ -342,7 +342,7 @@ public class MyServiceImpl implements MyService {
             
             columnNames.append(",").append(columnName);
             
-            Object value = ReflectionUtils.getFieldValueByGetter(model, field);
+            Object value = ReflectionUtils.getFieldValue(model, field);
             values.add(value);
         }  
 
@@ -381,7 +381,7 @@ public class MyServiceImpl implements MyService {
             	continue;
             }
             String columnName = this.getColumnName(modelClass, field);
-            Object value = ReflectionUtils.getFieldValueByGetter(model, field);
+            Object value = ReflectionUtils.getFieldValue(model, field);
 
             Map<String, Object> pair = new HashMap<>();
             pair.put("columnName", columnName);
@@ -658,7 +658,7 @@ public class MyServiceImpl implements MyService {
     	T model = ReflectionUtils.newInstance(modelClass);
     	for(Map.Entry<String, Object> entry : map.entrySet()){
     		try{
-    			ReflectionUtils.setFieldValueBySetter(model, entry.getKey(), entry.getValue());
+    			ReflectionUtils.setFieldValue(model, entry.getKey(), entry.getValue());
     		} catch(Exception e){
     			continue;
     		}
