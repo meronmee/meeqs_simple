@@ -26,6 +26,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * HTTP/HTTPS 请求工具类<p>
@@ -98,14 +99,9 @@ public final class HttpUtils {
 				.newCall(request)
 				.execute();
 		
-		if (response.isSuccessful()) {//成功的请求，返回包体		
-			String responseBody = response.body().string();
-			log.info("[POST-Form-{}]URL:{}, Response:{}", reqId, url, responseBody);
-			return responseBody;
-		} else {
-			log.info("[POST-Form-{}]URL:{}, ResponseError:{}", reqId, url, response.code());
-			throw new IOException("Unexpected code " + response.code());
-		}
+		String responseBody = getResponseInfo(response);
+		log.info("[POST-Form-{}]URL:{}, Response:{}", reqId, url, responseBody);
+		return responseBody;
 	}
 	
 	//-------------------------
@@ -181,7 +177,8 @@ public final class HttpUtils {
 
 				@Override
 				public void onResponse(Call call, Response response) throws IOException {
-					log.info("[POST-Form-Async-{}]URL:{}, Response:{}", reqId, url, response.body().string());
+					String responseBody = getResponseInfo(response);
+					log.info("[POST-Form-Async-{}]URL:{}, Response:{}", reqId, url, responseBody);
 				}
 				
 			});			
@@ -251,15 +248,10 @@ public final class HttpUtils {
 		Response response = newClient(url)
 				.newCall(request)
 				.execute();
-				
-		if (response.isSuccessful()) {//成功的请求，返回包体		
-			String responseBody = response.body().string();
-			log.info("[POST-Str-{}]URL:{}, Response:{}", reqId, url, responseBody);
-			return responseBody;
-		} else {
-			log.info("[POST-Str-{}]URL:{}, ResponseError:{}", reqId, url, response.code());
-			throw new IOException("Unexpected code " + response.code());
-		}
+			
+		String responseBody = getResponseInfo(response);
+		log.info("[POST-Str-{}]URL:{}, Response:{}", reqId, url, responseBody);
+		return responseBody;
 	}
 
 	//-------------------------
@@ -343,7 +335,8 @@ public final class HttpUtils {
 
 				@Override
 				public void onResponse(Call call, Response response) throws IOException {
-					log.info("[POST-Str-Async-{}]URL:{}, Response:{}", reqId, url, response.body().string());
+					String responseBody = getResponseInfo(response);
+					log.info("[POST-Str-Async-{}]URL:{}, Response:{}", reqId, url, responseBody);
 				}
 				
 			});			
@@ -403,14 +396,9 @@ public final class HttpUtils {
 				.newCall(request)
 				.execute();
 		
-		if (response.isSuccessful()) {//成功的请求，返回包体		
-			String responseBody = response.body().string();
-			log.info("[GET-{}]URL:{}, Response:{}", reqId, url, responseBody);
-			return responseBody;
-		} else {
-			log.info("[GET-{}]URL:{}, ResponseError:{}", reqId, url, response.code());
-			throw new IOException("Unexpected code " + response.code());
-		}
+		String responseBody = getResponseInfo(response);
+		log.info("[GET-{}]URL:{}, Response:{}", reqId, url, responseBody);
+		return responseBody;
 	}
 	
 	/**
@@ -461,7 +449,8 @@ public final class HttpUtils {
 
 				@Override
 				public void onResponse(Call call, Response response) throws IOException {
-					log.info("[GET-Async-{}]URL:{}, Response:{}", reqId, url, response.body().string());
+					String responseBody = getResponseInfo(response);
+					log.info("[GET-Async-{}]URL:{}, Response:{}", reqId, url, responseBody);
 				}
 				
 			});			
@@ -519,6 +508,29 @@ public final class HttpUtils {
         
         return ssfFactory;    
     }  
+	
+	/**
+	 * 获取Response的信息
+	 * @param response
+	 * @return
+	 */
+	private static String getResponseInfo(Response response) throws IOException{
+		try{
+			if(response == null){
+				return "response is null";
+			}
+			ResponseBody responseBody = response.body();
+			if(responseBody != null){
+				String bodyString = responseBody.string();
+				if(bodyString != null){
+					return bodyString;
+				}				
+			}
+			return "response code:" + response.code() + ", response body: null";
+		}catch(IOException e){
+			throw e;
+		}
+	}
 	
 	//-------------------------
 	
