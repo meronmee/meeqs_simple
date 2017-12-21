@@ -2,12 +2,13 @@
 - Maven（分环境配置、打包）
 - Spring（IOC DI AOP 声明式事务处理）
 - Spring MVC（支持Restful风格）
-- Sping Shiro权限控制
+- Sping Shiro（权限控制）
 - Mybatis（封装公共操作 + 最少配置方案）
 - Druid（数据源配置 sql性能监控)
 - FreeMarker（模板引擎）
 - Logback（日志框架）
 - 统一的异常处理
+- 常用工具封装
 
 # 核心组件版本（皆为2017-12-21最新版本）
 名称 | 版本
