@@ -1,12 +1,23 @@
 # Java SSM 快速开发框架
 - Maven（分环境配置、打包）
 - Spring（IOC DI AOP 声明式事务处理）
-- SpringMVC（支持Restful风格）
+- Spring MVC（支持Restful风格）
+- Sping Shiro权限控制
 - Mybatis（封装公共操作 + 最少配置方案）
-- 统一的异常处理
 - Druid（数据源配置 sql性能监控)
-- Sping Shiro权限控制（待完善）
-- Quartz时间调度（待完善）
+- FreeMarker（模板引擎）
+- Logback（日志框架）
+- 统一的异常处理
+
+# 核心组件版本（皆为2017-12-21最新版本）
+名称 | 版本
+------------ | -------------
+Spring | 5.0.2.RELEASE
+Shiro | 1.3.2
+Mybatis | 3.4.5
+FreeMarker | 2.3.27-incubating
+Logback | 1.2.3
+
 
 # 目录结构
 <pre>
