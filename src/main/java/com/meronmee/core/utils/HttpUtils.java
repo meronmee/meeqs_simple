@@ -2,6 +2,7 @@ package com.meronmee.core.utils;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,6 +13,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -533,6 +535,25 @@ public final class HttpUtils {
 	}
 	
 	//-------------------------
+	
+	/**
+	 * 信任全部HTTPS证书的X509TrustManager
+	 * @author Meron
+	 *
+	 */
+	public static final class TrustAllCerts implements X509TrustManager {  
+	    @Override    
+	    public void checkClientTrusted(X509Certificate[] chain, String authType) {}  
+	    
+	    @Override    
+	    public void checkServerTrusted(X509Certificate[] chain, String authType) {}  
+	    
+	    @Override    
+	    public X509Certificate[] getAcceptedIssuers() {return new X509Certificate[0];}    
+	}
+
+	//-------------------------
+	
 	
 	public static void main(String[] args) throws Exception{
 		String res = null;
