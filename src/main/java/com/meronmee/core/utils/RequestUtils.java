@@ -1109,4 +1109,28 @@ public class RequestUtils {
 		}	
 		return false;
 	}
+	
+	//--------------------内部类----------------------------	
+
+	/**
+	 * MultipartFile Map
+	 * @author Meron
+	 *
+	 */
+	public static final class MultiFileMap{
+		MultiValueMap<String, MultipartFile> multipartFiles = new LinkedMultiValueMap<String, MultipartFile>();	
+	
+		public MultiFileMap(MultiValueMap<String, MultipartFile> multipartFiles) {
+			this.multipartFiles = multipartFiles;
+		}
+	
+		public MultipartFile getFile(String name) {
+			return this.multipartFiles.getFirst(name);
+		}
+		
+		public List<MultipartFile> getFiles(String name) {
+			return this.multipartFiles.get(name);
+		}	
+	}
+	
 }
