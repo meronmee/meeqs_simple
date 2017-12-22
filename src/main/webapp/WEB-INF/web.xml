@@ -17,6 +17,10 @@
 	<filter-mapping>
 	    <filter-name>shiroFilter</filter-name>
 	    <url-pattern>/manage/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+        <dispatcher>ERROR</dispatcher>            
 	</filter-mapping>
 	
 	<!--配置DispatcherServlet -->
@@ -79,4 +83,13 @@
 	  	<filter-name>EncodingFilter</filter-name>
 	  	<url-pattern>*.json</url-pattern>
 	</filter-mapping>
+	
+	<error-page>
+        <error-code>404</error-code>
+        <location>/404.htm</location>
+    </error-page>
+	<error-page>
+        <error-code>500</error-code>
+        <location>/500.htm</location>
+    </error-page>
 </web-app>

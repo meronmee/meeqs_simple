@@ -25,7 +25,7 @@ import com.meronmee.core.utils.Assert;
 import com.meronmee.core.utils.RequestUtils;
 
 /**
- * 管理端用户控制器
+ * 管理端基础控制器
  * @author Meron
  *
  */
@@ -113,20 +113,6 @@ public class ManageMainAction extends BaseAction{
     @RequestMapping(value = "/manage/error/error.htm",  method = RequestMethod.GET)
     public String errorPage(HttpServletRequest request, HttpServletResponse response, ModelMap viewData) {        
         return "manage/error/error";
-    }
-    /**
-	 * 404页面
-	 */
-    @RequestMapping(value = "/manage/error/404.htm",  method = RequestMethod.GET)
-    public String notFoundPage(HttpServletRequest request, HttpServletResponse response, ModelMap viewData) {        
-        return "manage/error/404";
-    }
-    /**
-	 * 500页面
-	 */
-    @RequestMapping(value = "/manage/error/500.htm",  method = RequestMethod.GET)
-    public String fatalPage(HttpServletRequest request, HttpServletResponse response, ModelMap viewData) {        
-        return "manage/error/500";
     }
     
 	/**

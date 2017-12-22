@@ -17,9 +17,6 @@ public class BaseAction {
 	protected final Logger log = LoggerFactory.getLogger(this.getClass());
     
     @Autowired
-	protected MyService service;
-    
-    
-    
-    
+	protected MyService service;       
+
 }

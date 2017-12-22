@@ -3,11 +3,14 @@ package com.meronmee.core.interceptor;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import com.meronmee.core.commons.Const;
 
 /**
  * 接口请求拦截器
@@ -24,6 +27,7 @@ public class GlobalInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws ServletException {	
 		//log.info("------preHandle---------");	
+		
 		InterceptorHelper.printRequestLog(request, response);
 		return true;
 	}
@@ -35,6 +39,13 @@ public class GlobalInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 		//log.info("------postHandle---------");		
+		
+		int statusCode = response.getStatus();
+		if(statusCode == 404 || statusCode == 500){
+			HttpSession session = request.getSession(true);
+			session.setAttribute(Const.SESSION_KEY_ERROR_SOURCE_URL, request.getRequestURL().toString());
+		}
+		
 		if (null == modelAndView) {
 			return;
 		}

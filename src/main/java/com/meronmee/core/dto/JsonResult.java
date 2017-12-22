@@ -17,7 +17,7 @@ public class JsonResult implements Serializable {
 	private static final long serialVersionUID = -4185151304730685014L;
 	
 	/**
-	 * 返回码 200成功, 400:业务报错, 401:未认证(未登录), 402:未授权(权限不够), 500:程序错误
+	 * 返回码 200成功, 400:业务报错, 401:未认证(未登录), 402:未授权(权限不够), 404:请求地址无效, 500:程序错误
 	 */
 	private Code code;
 	/**
@@ -110,8 +110,7 @@ public class JsonResult implements Serializable {
 	
 	/**
 	 * 返回码字典<p>
-	 * 
-	 * 200成功, 400:业务报错, 401:未认证(未登录), 402:未授权(权限不够), 500:程序错误
+	 * 200成功, 400:业务报错, 401:未认证(未登录), 402:未授权(权限不够), 404:请求地址无效, 500:程序错误
 	 */
 	public enum Code {
 		/** 200 - 成功 */
@@ -125,6 +124,9 @@ public class JsonResult implements Serializable {
 		
 		/** 402 - 未授权(权限不够) */
 		AUTH_ERROR(402),
+		
+		/** 404 - 请求地址无效 */
+		NOT_FOUND(402),
 
 		/** 500 - 程序错误 */
 		EXCEPTION(500);
@@ -136,7 +138,7 @@ public class JsonResult implements Serializable {
 	        this.code = code;
 	    }
 	    /**
-	     * 返回整型错误码  200成功, 400:业务报错, 401:未认证(未登录), 402:未授权(权限不够), 500:程序错误
+	     * 返回整型错误码  200成功, 400:业务报错, 401:未认证(未登录), 402:未授权(权限不够), 404:请求地址无效, 500:程序错误
 	     */
 	    public int getCode(){
 	    	return this.code;

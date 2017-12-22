@@ -158,8 +158,19 @@ public class InterceptorHelper extends HandlerInterceptorAdapter {
 		}
 		String url = request.getRequestURL().toString();
 		
+		return isAjax(url);
+	}
+	
+	/**
+	 * 判断是否是Ajax请求<p>
+	 * 根据url后缀结合实际业务情况判断
+	 * @param url
+	 */
+	public static boolean isAjax(String url){
+		if(BaseUtils.isBlank(url)){
+			return false;
+		}
 		//return url.matches("^.+\\.(json|xml|htm|api)(\\?.*)?$"));
-		return url.matches("^.+\\.(json)(\\?.*)?$");
-
+		return url.toLowerCase().matches("^.+\\.(json)(\\?.*)?$");
 	}
 }
