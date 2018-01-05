@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
  * 加解密工具类
  * <pre>
  * 支持如下加密算法：
- * 单向加密: MD5、SHA1
+ * 单向加密: MD5、SHA1、SHA256
  * 双向加解密: Base64, XOR, DES、DESede(3DES)、AES
  * </pre>
  */
@@ -175,6 +175,51 @@ public class EncryptUtil {
     		sb.append(salt);
     	}
     	return DigestUtils.sha1Hex(sb.toString()).toLowerCase();
+    }
+
+    //----------------SHA-256-----------------
+    
+    /**
+     * 求一个文件的SHA-256值
+     * @param file 目标文件
+     * @return SHA-256值（小写十六进制字符串）, 如果为file非合法文件或出现IO异常，则返回null
+     */
+    public static String sha256(final File file) {
+    	try {
+        	if(file == null || !file.exists() || !file.isFile()){
+        		return null;
+        	}
+			return DigestUtils.sha256Hex(new FileInputStream(file)).toLowerCase();
+		} catch (Exception e) {
+			e.printStackTrace();
+    		return null;
+		}
+    }
+    
+    /**
+     * 求一个字符串的SHA-256值
+     * @param str 目标字符串
+     * @return SHA-256值（小写十六进制字符串）
+     */
+    public static String sha256(final String str) {
+    	return sha256(str, "");
+    }
+    
+    /**
+     * 求一个字符串的SHA-256值
+     * @param str 目标字符串
+     * @param salt 盐
+     * @return SHA-256值（小写十六进制字符串）
+     */
+    public static String sha256(final String str, final String salt) {
+    	StringBuilder sb = new StringBuilder("");
+    	if(StringUtils.isNotBlank(str)){
+    		sb.append(str);
+    	}
+    	if(StringUtils.isNotBlank(salt)){
+    		sb.append(salt);
+    	}
+    	return DigestUtils.sha256Hex(sb.toString()).toLowerCase();
     }
     
     
