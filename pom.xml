@@ -20,9 +20,9 @@
 		<guava.version>23.3-jre</guava.version>
 		<fastjson.version>1.2.41</fastjson.version>
 		<freemarker.version>2.3.27-incubating</freemarker.version>
-		<slf4j.version>1.7.25</slf4j.version>
-		
+		<slf4j.version>1.7.25</slf4j.version>		
 		<logback.version>1.2.3</logback.version>
+		
 		<!-- plugin version -->
 		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
 		<maven-war-plugin.version>2.6</maven-war-plugin.version>
