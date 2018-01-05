@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 	<!-- https://segmentfault.com/a/1190000008315137 -->
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+	<!-- http://czj4451.iteye.com/blog/1984259 -->
+	<!-- 全局控制台日志输出 -->
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<!--
 				格式说明:http://logback.qos.ch/manual/layouts.html#ClassicPatternLayout
@@ -12,12 +14,13 @@
 		</encoder>
 	</appender>
 	
-	<appender name="LOGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+	<!-- 全局文件日志输出 -->
+	<appender name="logfile" class="ch.qos.logback.core.rolling.RollingFileAppender">
 	  <!-- 当前Log文件名 -->
-	  <file>./logs/meeqs.log</file>
+	  <file>${catalina.base}/logs/meeqs.log</file>
 	  <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
-	    	<!-- 每天的Log文件压缩备份为./logs/meeqs.%d{yyyy-MM-dd}.log-->
-	    	<fileNamePattern>./logs/meeqs.%d{yyyy-MM-dd}.log</fileNamePattern>
+	    	<!-- 每天的Log文件压缩备份为${catalina.base}/logs/meeqs.%d{yyyy-MM-dd}.log-->
+	    	<fileNamePattern>${catalina.base}/logs/meeqs.%d{yyyy-MM-dd}.log</fileNamePattern>
 	    	<!-- 超过30天的备份文件会被删除 -->
 	    	<maxHistory>30</maxHistory> 
 	  </rollingPolicy>
@@ -25,19 +28,41 @@
 	      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%logger:%line] - %msg%n</pattern>
 	  </encoder>
 	</appender>  
+	
+	<!-- HTTP服务端接口请求日志输出 -->
+	<appender name="httpAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+	  <!-- 当前Log文件名 -->
+	  <file>${catalina.base}/logs/meeqs.http.log</file>
+	  <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
+	    	<!-- 每天的Log文件压缩备份为${catalina.base}/logs/meeqs.http.%d{yyyy-MM-dd}.log -->
+	    	<fileNamePattern>${catalina.base}/logs/meeqs.http.%d{yyyy-MM-dd}.log</fileNamePattern>
+	    	<!-- 超过30天的备份文件会被删除 -->
+	    	<maxHistory>30</maxHistory> 
+	  </rollingPolicy>
+	  <encoder>
+	      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%logger:%line] - %msg%n</pattern>
+	  </encoder>
+	</appender>
+    
     
 	<logger name="com.meronmee" level="INFO"/>
+    <!-- 专用于HttpUtils的日志 -->
+	<logger name="com.meronmee.core.utils.HttpUtils" level="INFO">
+	    <appender-ref ref="httpAppender" />  
+	</logger>  
+	<!-- 设置常用组件日志级别 -->
 	<logger name="org.springframework" level="ERROR"/>
+		
 	<!-- 配置mybatis只在控制台中输出sql
 	 	 see:http://blog.csdn.net/wangnan537/article/details/50069697 -->
 	<!--  
 	<logger name="mybatis" level="DEBUG">
-	  <appender-ref ref="STDOUT"/>
+	  <appender-ref ref="stdout"/>
 	</logger>
-   -->
+    -->
 
 	<root level="ERROR">
-		<appender-ref ref="STDOUT"/>
-		<appender-ref ref="LOGFILE"/>
+		<appender-ref ref="stdout"/>
+		<appender-ref ref="logfile"/>
 	</root>  
 </configuration>
