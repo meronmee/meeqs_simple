@@ -15,7 +15,7 @@ public class DateUtils {
 	/**yyyyMMdd*/
 	public static final SimpleDateFormat FORMAT_DATE = new SimpleDateFormat("yyyyMMdd");
 	/**yyyy-MM-dd HH:mm:ss*/
-	public static final SimpleDateFormat FORMAT_DATETIME = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	public static final SimpleDateFormat FORMAT_DATETIME_19 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	/**yyyyMMddHHmmss*/
 	public static final SimpleDateFormat FORMAT_DATETIME_14 = new SimpleDateFormat("yyyyMMddHHmmss");
 

@@ -145,50 +145,92 @@ public class RequestUtils {
 	  }
 	
 	/**
-	 * 获取QueryString的参数，并使用URLDecoder以UTF-8格式转码。如果请求是以post方法提交的，
-	 * 那么将通过HttpServletRequest#getParameter获取。
+	 * 获取请求参数
 	 * 
-	 * @param request
-	 *            web请求
-	 * @param name
-	 *            参数名称
+	 * @param request web请求
+	 * @param name 参数名称
+	 * @return
+	 */
+	public static String getParam(HttpServletRequest request, String name) {
+		return getParam(request, name, null);
+	}
+	
+	/**
+	 * 获取请求参数<p>
+	 * 优先读取QueryString的第一个，没有再读取Body中的参数，为空再使用默认值
+	 * 
+	 * @param request web请求
+	 * @param name 参数名称
+	 * @param defaultValue 默认值
+	 * @return
+	 */
+	public static String getParam(HttpServletRequest request, String name, String defaultValue) {
+		if (StringUtils.isBlank(name) || request == null) {
+			return defaultValue;
+		}
+		
+		String value = request.getParameter(name);		
+		return getFirstNotBlank(value, defaultValue);
+	}
+	
+	/**
+	 * 获取QueryString中的请求参数<p>
+	 * 优先读取QueryString的第一，为空再第二个，...
+	 * 
+	 * @param request web请求
+	 * @param name 参数名称
 	 * @return
 	 */
 	public static String getQueryParam(HttpServletRequest request, String name) {
 		return getQueryParam(request, name, null);
 	}
-	
 	/**
-	 * 获取QueryString的参数，并使用URLDecoder以UTF-8格式转码。如果请求是以post方法提交的，
-	 * 那么将通过HttpServletRequest#getParameter获取。
+	 * 获取QueryString中的请求参数<p>
+	 * 优先读取QueryString的第一，为空再第二个，最终为空再使用默认值
 	 * 
-	 * @param request
-	 *            web请求
-	 * @param name
-	 *            参数名称
-	 * @param defaultValue
-	 *            默认值
+	 * @param request web请求
+	 * @param name 参数名称
+	 * @param defaultValue 默认值
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static String getQueryParam(HttpServletRequest request, String name, String defaultValue) {
-		if (StringUtils.isBlank(name)) {
+		if (StringUtils.isBlank(name) || request == null) {
 			return defaultValue;
 		}
-		if (request.getMethod().equalsIgnoreCase(POST)) {
-			return getFirstNotBlank(request.getParameter(name), defaultValue);
+		
+		//先检查Request中缓存的queryStringMap
+		Map<String, String[]> queryStringMap = (Map<String, String[]>)request.getAttribute("__queryStringMap");
+		if(queryStringMap == null){
+			String s = request.getQueryString();
+			if (StringUtils.isBlank(s)) {
+				return defaultValue;
+			}
+			try {
+				s = URLDecoder.decode(s, UTF8);
+			} catch (UnsupportedEncodingException e) {
+				log.error("encoding " + UTF8 + " not support?", e);
+				return defaultValue;
+			}
+			
+			queryStringMap = parseQueryString(s);
+			if(BaseUtils.isNotEmpty(queryStringMap)){
+				request.setAttribute("__queryStringMap", queryStringMap);
+			}
 		}
-		String s = request.getQueryString();
-		if (StringUtils.isBlank(s)) {
-			return defaultValue;
+		
+		if(BaseUtils.isEmpty(queryStringMap)){
+			return defaultValue;			
 		}
-		try {
-			s = URLDecoder.decode(s, UTF8);
-		} catch (UnsupportedEncodingException e) {
-			log.error("encoding " + UTF8 + " not support?", e);
-		}
-		String[] values = parseQueryString(s).get(name);
+				
+		String[] values = queryStringMap.get(name);
 		if (values != null && values.length > 0) {			
-			return getFirstNotBlank(values[values.length - 1], defaultValue);
+			String value = getFirstNotBlank(values);
+			if(StringUtils.isNotBlank(value)){
+				return value;
+			} else {
+				return defaultValue;
+			}
 		} else {
 			return defaultValue;
 		}
@@ -196,32 +238,23 @@ public class RequestUtils {
 	
 
 	/**
-	 * 获取QueryString的参数，并使用URLDecoder以UTF-8格式转码。如果请求是以post方法提交的，
-	 * 那么将通过HttpServletRequest#getParameter获取。
-	 * 
-	 * @param request
-	 *            web请求
-	 * @param name
-	 *            参数名称
+	 * 获取String类型请求参数
+	 * @param request web请求
+	 * @param name 参数名称
 	 * @return
 	 */
 	public static String getStringParam(HttpServletRequest request, String name) {
-		return getQueryParam(request, name);
+		return getParam(request, name);
 	}
 	/**
-	 * 获取QueryString的参数，并使用URLDecoder以UTF-8格式转码。如果请求是以post方法提交的，
-	 * 那么将通过HttpServletRequest#getParameter获取。
-	 * 
-	 * @param request
-	 *            web请求
-	 * @param name
-	 *            参数名称
-	 * @param defaultValue
-	 *            默认值
+	 * 获取String类型请求参数
+	 * @param request web请求
+	 * @param name 参数名称
+	 * @param defaultValue  默认值
 	 * @return
 	 */
 	public static String getStringParam(HttpServletRequest request, String name, String defaultValue){
-		return getQueryParam(request, name, defaultValue);
+		return getParam(request, name, defaultValue);
 	}
 
 	/**
@@ -237,7 +270,7 @@ public class RequestUtils {
 	 * @return
 	 */
 	public static Integer getIntegerParam(HttpServletRequest request, String name, Integer defaultValue){
-		String value = getQueryParam(request, name);
+		String value = getParam(request, name);
 		Integer result = BaseUtils.toInteger(value);
 		return result != null ? result : defaultValue;
 	}
@@ -267,7 +300,7 @@ public class RequestUtils {
 	 * @return
 	 */
 	public static Long getLongParam(HttpServletRequest request, String name, Long defaultValue){
-		String value = getQueryParam(request, name);
+		String value = getParam(request, name);
 		Long result = BaseUtils.toLong(value);
 				
 		return result != null ? result : defaultValue;
@@ -298,7 +331,7 @@ public class RequestUtils {
 	 * @return
 	 */
 	public static Float getFloatParam(HttpServletRequest request, String name, Float defaultValue){
-		String value = getQueryParam(request, name);
+		String value = getParam(request, name);
 		if(value == null || "".equals(value)){
 			return defaultValue;
 		}
@@ -370,7 +403,7 @@ public class RequestUtils {
 	 * @return
 	 */
 	public static Boolean getBooleanParam(HttpServletRequest request, String name, Boolean defaultValue){
-		String value = getQueryParam(request, name);
+		String value = getParam(request, name);
 		Boolean result = BaseUtils.toBoolean(value);
 		return result != null ? result : defaultValue;
 	}
@@ -401,7 +434,7 @@ public class RequestUtils {
 	 * @return
 	 */
 	public static Date getDateParam(HttpServletRequest request, String name, Date defaultValue){
-		String value = getQueryParam(request, name);
+		String value = getParam(request, name);
 		Date result = BaseUtils.toDate(value);
 		return result != null ? result : defaultValue;
 	}

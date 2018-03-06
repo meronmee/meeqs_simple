@@ -6,6 +6,13 @@ import org.apache.ibatis.annotations.Param;
 
 import com.meronmee.base.model.User;
 
+/**
+ * 用户Dao<p>
+ * 类路径需要和src/main/resources/mapper/UserMapper.xml中的namespace一致<p>
+ * 方法和参数要和UserMapper.xml中的ID参数一致
+ * @author Meron
+ *
+ */
 public interface UserDao {
 
 	/**
@@ -14,7 +21,7 @@ public interface UserDao {
      * @param phone
      * @return
      */
-    public User queryByPhone(String phone);    
+    public User queryByPhone(@Param("phone") String phone);    
     
     /**
      * 分页查询用户列表
@@ -36,6 +43,6 @@ public interface UserDao {
      *
      * @param param
      */
-    public User findByUsernameOrPhone(String param);    
+    public User findByUsernameOrPhone(@Param("param") String param);    
     
 }

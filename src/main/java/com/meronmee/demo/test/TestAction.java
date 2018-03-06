@@ -20,7 +20,7 @@ import com.meronmee.core.utils.SettingHolder;
 import com.meronmee.core.utils.SysPropHolder;
 
 /**
- * 基本用法示例
+ * 调试
  * @author Meron
  *
  */
@@ -47,23 +47,14 @@ public class TestAction extends BaseAction{
     /**
 	 * Ajax请求
 	 */ 
-    @RequestMapping(value = "/demo/test/test.json", method = RequestMethod.POST)
+    @RequestMapping(value = "/demo/test/test.json")
     public JsonResult testAjax(HttpServletRequest request, HttpServletResponse response) {
         String msg = RequestUtils.getStringParam(request, "msg");
-        Assert.isNotBlank(msg, "msg不能为空");
-        log.info("test.arg1:{}", SettingHolder.getString("test.arg1"));              
-        log.info("SysPropHolder#system.arg1:{}", SysPropHolder.getString("system.arg1"));
-            
-        User user = this.service.retrieveModel(User.class, 2L);
-        log.info(user.getUsername());
+        log.info("msg1:{}", RequestUtils.getStringParam(request, "msg"));
+        log.info("msg2:{}", RequestUtils.getStringParam(request, "msg")); 
+        log.info("msg3:{}", RequestUtils.getQueryParam(request, "msg", "def"));       
         
-        try {
-			HttpUtils.post("http://yscmall.yijiahn.com/mall/demo/test.json", null);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-        
-    	return new Success(); 
+    	return new Success(msg); 
     }
         
 }

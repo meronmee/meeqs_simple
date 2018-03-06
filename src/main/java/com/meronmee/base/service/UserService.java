@@ -5,8 +5,11 @@ import java.util.List;
 import com.meronmee.base.model.User;
 
 
-public interface UserService {
-	List<User> getUserList(int offset, int limit);
+public interface UserService {	
+	/**
+	 * 分页查询所有用户
+	 */
+	public List<User> getUserList(int offset, int limit);
 	/**
      * 修改昵称
      */

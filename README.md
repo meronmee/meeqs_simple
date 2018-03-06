@@ -2,7 +2,7 @@
 - Maven（分环境配置、打包）
 - Spring（IOC DI AOP 声明式事务处理）
 - Spring MVC（支持Restful风格）
-- Sping Shiro（权限控制）
+- Spring Shiro（权限控制）
 - Mybatis（封装公共操作 + 最少配置方案）
 - Druid（数据源配置 sql性能监控)
 - FreeMarker（模板引擎）
@@ -52,7 +52,8 @@ Logback | 1.2.3
 1. 下载代码后先运行 src/test/java/com/meronmee/local/ModifyBasePackage.java 修改基础包名
 2. 修改pom.xml中的artifactId
 3. 到此已经可以跑起来了
-4. 可使用 build_*.bat 打包对应环境下的WAR发布包。其中, 
+4. 使用src/test/java/com/meronmee/local/ModuleGenerator.java可以生成新模块的基础代码
+5. 可使用 build_*.bat 打包对应环境下的WAR发布包。其中, 
   - build_dev.bat 用于打包开发版本（使用src/main/resources/config/*.properties_dev配置信息）
   - build_test.bat 用于打包测试版本（使用src/main/resources/config/*.properties_test配置信息）
   - build_prep.bat 用于打包预生产版本（使用src/main/resources/config/*.properties_prep配置信息）

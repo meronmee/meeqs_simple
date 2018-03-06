@@ -58,7 +58,7 @@ public class ManageUserAction extends BaseAction{
     //@RequiresRoles("admin")
     @RequiresPermissions(value={"admin", "user:profile"}, logical=Logical.OR)
     @RequestMapping(value = "/manage/user/profile.htm",  method = RequestMethod.GET)
-    public String profilePage(HttpServletRequest request, HttpServletResponse response, ModelMap viewData) throws TemplateModelException {
+    public String profilePage(HttpServletRequest request, HttpServletResponse response, ModelMap viewData) {
 		Long id = RequestUtils.getLongParam(request, "id");
 		Assert.isNotNull(id, "ID不能为空");
 				
