@@ -87,8 +87,7 @@ public class TestAction extends BaseAction{
 			
 			User userInfo = user; 
 			//Map<String,Object> userInfo = user.toMap();
-			//String userInfo = JSON.toJSONString(user);
-			
+			//String userInfo = JSON.toJSONString(user); 
 			this.redisService.setObj(key, userInfo, 8); 			
 			//this.redisService.set(key, userInfo, 8); 
 		} else if("delete".equals(oper)){
