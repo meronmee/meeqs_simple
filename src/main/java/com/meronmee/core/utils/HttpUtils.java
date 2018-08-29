@@ -78,6 +78,9 @@ public final class HttpUtils {
 		FormBody.Builder bodyBuilder = new FormBody.Builder();		
 		if(BaseUtils.isNotEmpty(data)){
 			for(Entry<String, String> entry : data.entrySet()){
+				if(null == entry.getValue()){
+					continue;
+				}
 				bodyBuilder.add(entry.getKey(), entry.getValue());				
 			}
 		}
@@ -86,6 +89,9 @@ public final class HttpUtils {
 		Headers.Builder headerBuilder = new Headers.Builder();
 		if(BaseUtils.isNotEmpty(headers)){
 			for(Entry<String, String> entry : headers.entrySet()){
+				if(null == entry.getValue()){
+					continue;
+				}
 				headerBuilder.add(entry.getKey(), entry.getValue());				
 			}
 		}
@@ -145,6 +151,9 @@ public final class HttpUtils {
 		FormBody.Builder bodyBuilder = new FormBody.Builder();		
 		if(BaseUtils.isNotEmpty(data)){
 			for(Entry<String, String> entry : data.entrySet()){
+				if(null == entry.getValue()){
+					continue;
+				}
 				bodyBuilder.add(entry.getKey(), entry.getValue());				
 			}
 		}
@@ -153,6 +162,9 @@ public final class HttpUtils {
 		Headers.Builder headerBuilder = new Headers.Builder();
 		if(BaseUtils.isNotEmpty(headers)){
 			for(Entry<String, String> entry : headers.entrySet()){
+				if(null == entry.getValue()){
+					continue;
+				}
 				headerBuilder.add(entry.getKey(), entry.getValue());				
 			}
 		}
@@ -236,6 +248,9 @@ public final class HttpUtils {
 		Headers.Builder headerBuilder = new Headers.Builder();
 		if(BaseUtils.isNotEmpty(headers)){
 			for(Entry<String, String> entry : headers.entrySet()){
+				if(null == entry.getValue()){
+					continue;
+				}
 				headerBuilder.add(entry.getKey(), entry.getValue());				
 			}
 		}
@@ -312,6 +327,9 @@ public final class HttpUtils {
 		Headers.Builder headerBuilder = new Headers.Builder();
 		if(BaseUtils.isNotEmpty(headers)){
 			for(Entry<String, String> entry : headers.entrySet()){
+				if(null == entry.getValue()){
+					continue;
+				}
 				headerBuilder.add(entry.getKey(), entry.getValue());				
 			}
 		}
@@ -383,6 +401,9 @@ public final class HttpUtils {
 		Headers.Builder headerBuilder = new Headers.Builder();
 		if(BaseUtils.isNotEmpty(headers)){
 			for(Entry<String, String> entry : headers.entrySet()){
+				if(null == entry.getValue()){
+					continue;
+				}
 				headerBuilder.add(entry.getKey(), entry.getValue());				
 			}
 		}
@@ -427,6 +448,9 @@ public final class HttpUtils {
 		Headers.Builder headerBuilder = new Headers.Builder();
 		if(BaseUtils.isNotEmpty(headers)){
 			for(Entry<String, String> entry : headers.entrySet()){
+				if(null == entry.getValue()){
+					continue;
+				}
 				headerBuilder.add(entry.getKey(), entry.getValue());				
 			}
 		}

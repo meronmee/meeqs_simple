@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.meronmee.core.dto.AuthError;
 import com.meronmee.core.dto.CertError;
-import com.meronmee.core.dto.Failure;
+import com.meronmee.core.dto.BizError;
 import com.meronmee.core.dto.JsonResult;
 import com.meronmee.core.dto.JsonResult.Code;
 import com.meronmee.core.exception.BizException;

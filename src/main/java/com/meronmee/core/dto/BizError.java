@@ -4,13 +4,13 @@ package com.meronmee.core.dto;
  *  Ajax请求失败时返回数据封装类<p>
  *  {"code":400, "msg":"操作失败", "data":... }
  */
-public class Failure extends JsonResult{
+public class BizError extends JsonResult{
 	private static final long serialVersionUID = -4947169183770256483L;
 	/**
 	 *  Ajax请求失败时返回数据封装类<p>
 	 *  {"code":400, "msg":"操作失败", "data":... }
 	 */
-	public Failure(){
+	public BizError(){
 		this.setCode(JsonResult.Code.ERROR).setMsg("Failure");
 	}
 	
@@ -18,14 +18,14 @@ public class Failure extends JsonResult{
 	 * @param msg 提示消息
 	 * @param data 主体数据
 	 */
-    public Failure(String msg, Object data) {
+    public BizError(String msg, Object data) {
     	super(JsonResult.Code.ERROR, msg, data);
     }
     
     /**
 	 * @param data 提示消息
 	 */
-    public Failure(String msg) {
+    public BizError(String msg) {
     	this(msg, null);
     }
 

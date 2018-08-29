@@ -252,10 +252,33 @@
 		<dependency> <!-- 分页插件 -->
 		  <groupId>com.github.pagehelper</groupId>
 		  <artifactId>pagehelper</artifactId>
-		  <version>5.1.2</version>
+		  <version>5.1.4</version>
 		</dependency>
 		<!-- MyBatis 数据访问层 end -->	
 
+
+		<!-- Redis begin -->
+	    <dependency>
+	        <groupId>org.springframework.data</groupId>
+	        <artifactId>spring-data-redis</artifactId>
+	        <version>2.0.9.RELEASE</version>
+	    </dependency>
+	    <dependency>
+		    <groupId>redis.clients</groupId>
+		    <artifactId>jedis</artifactId>
+		    <version>2.9.0</version>
+		</dependency>
+		<dependency>
+		   <groupId>com.esotericsoftware</groupId>
+		   <artifactId>kryo</artifactId>
+		   <version>4.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>de.javakaffee</groupId>
+			<artifactId>kryo-serializers</artifactId>
+			<version>0.42</version>
+		</dependency>
+		<!-- Redis end -->	
 	</dependencies>
 
 	<!-- 不同环境配置 -->

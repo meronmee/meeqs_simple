@@ -126,7 +126,7 @@ public class JsonResult implements Serializable {
 		AUTH_ERROR(402),
 		
 		/** 404 - 请求地址无效 */
-		NOT_FOUND(402),
+		NOT_FOUND(404),
 
 		/** 500 - 程序错误 */
 		EXCEPTION(500);

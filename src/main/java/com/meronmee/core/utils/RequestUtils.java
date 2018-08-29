@@ -173,6 +173,69 @@ public class RequestUtils {
 		return getFirstNotBlank(value, defaultValue);
 	}
 	
+
+
+	/**
+	 * 从各个途径获取请求参数
+	 * querystring-body-header-cookie-requestAttr-sessionAttr
+	 * @param request web请求
+	 * @param name 参数名称,多个别名用逗号隔开。
+	 * @return
+	 */
+	public static String getParamHard(HttpServletRequest request, String name) {
+		if(StringUtils.isBlank(name)){
+		    return  null;
+        }
+        String[] names = name.split(",");
+
+		String value = null;
+
+		//通过getParameter 获取
+        for(String thisName : names){
+            value = request.getParameter(thisName);
+            if(StringUtils.isNotBlank(value)){
+                return value;
+            }
+        }
+
+        //通过 getParameter 获取
+        for(String thisName : names){
+            value = request.getHeader(thisName);
+            if(StringUtils.isNotBlank(value)){
+                return value;
+            }
+        }
+
+        //通过 cookie 获取
+        for(String thisName : names){
+            value = CookieUtils.getCookieValue(request, thisName);
+            if(StringUtils.isNotBlank(value)){
+                return value;
+            }
+        }
+
+        //通过 request attrbute 获取
+        for (String thisName : names) {
+            value = BaseUtils.toString(request.getAttribute(thisName));
+            if (StringUtils.isNotBlank(value)) {
+                return value;
+            }
+        }
+
+        //通过 session attrbute 获取
+        HttpSession session = request.getSession(false);
+        if(session != null) {
+            for (String thisName : names) {
+                value = BaseUtils.toString(session.getAttribute(thisName));
+                if (StringUtils.isNotBlank(value)) {
+                    return value;
+                }
+            }
+        }
+
+        return value;
+	}
+	
 	/**
 	 * 获取QueryString中的请求参数<p>
 	 * 优先读取QueryString的第一，为空再第二个，...

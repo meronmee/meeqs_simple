@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.meronmee.core.dto.AuthError;
 import com.meronmee.core.dto.CertError;
-import com.meronmee.core.dto.Failure;
+import com.meronmee.core.dto.BizError;
 import com.meronmee.core.dto.JsonResult;
 import com.meronmee.core.dto.JsonResult.Code;
 import com.meronmee.core.interceptor.InterceptorHelper;
@@ -36,7 +36,7 @@ public class GlobalExceptionResolver implements HandlerExceptionResolver {
 		if (InterceptorHelper.isAjax(request)) {//Ajax请求
 			JsonResult result = null;
 			if(e instanceof BizException){//业务报错
-				result = new Failure().setMsg(e.getMessage());
+				result = new BizError().setMsg(e.getMessage());
 			} else if(e instanceof UnauthorizedException){//授权失败(权限不足)
 				result = new CertError();
 			} else if(e instanceof UnauthenticatedException){//认证失败(未登录)
