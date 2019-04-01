@@ -101,6 +101,14 @@ public interface MyService{
 	public <T extends Model> int updateModel(Class<T> modelClass, T model);
 	
 
+    /**
+	 * 部分更新一条实体
+	 * @param model 要更新的实体
+	 * @param propNames 要更新的属性字段名称，逗号分割
+	 * @return 更新成功的记录数
+	 */ 
+	public <T extends Model> int updatePart(T model, String propNames);
+	
 	/**
 	 * 逻辑删除实体
 	 * @param modelClass 实体类

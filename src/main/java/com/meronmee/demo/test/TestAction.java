@@ -1,5 +1,8 @@
 package com.meronmee.demo.test;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -59,14 +62,32 @@ public class TestAction extends BaseAction{
 	 */ 
     @RequestMapping(value = "/demo/test/test.json")
     public JsonResult testAjax(HttpServletRequest request, HttpServletResponse response) {
-    	/*
-        log.info("msg1:{}", RequestUtils.getStringParam(request, "msg"));
-        log.info("msg2:{}", RequestUtils.getQueryParam(request, "msg"));   
-        log.info("msgs:" + JSON.toJSONString(request.getParameterValues("msg"))); 
-        */
-    	human.speak();
-        
-    	return new Success(); 
+    	Map<String, String> map = new HashMap<>(); 
+    	map.put("k1", "123"); 
+    	map.put("k2", "Hello World!"); 
+    	map.put("k3", "你好，中国！"); 
+       	
+    	//this.redisService.hSet("map", map);
+    	//this.redisService.hPut("map", "k2", "哈哈");
+    	//this.redisService.delete("map");
+
+
+    	Map<String, Object> map2 = new HashMap<>(); 
+    	map2.putAll(map);
+    	map2.put("k4", 4444);
+    	map2.put("k5", new BigDecimal(8.88));
+    	map2.put("k6", true);
+    	map2.put("k7", new Date());
+    	map2.put("k8", map);
+    	//this.redisService.setObj("map2", map2);
+    	//this.redisService.deleteObj("map2");
+    	//this.redisService.delete("map2");
+    	 
+    	
+		return new Success(new LinkMap()
+				//.append("map", this.redisService.hGetAll("map"))
+				.append("map2", this.redisService.getObj("map2"))
+		);  
     }
     
     /**

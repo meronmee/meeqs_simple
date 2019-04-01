@@ -183,6 +183,18 @@ public final class BaseUtils {
 	public static String formatIntListStr(String str){
 		return (","+str+",").replaceAll(",\\s+", ",").replaceAll("\\s+,", ",").replaceAll(",[^,]*[^0-9,]+[^,]*", "").replaceAll("^,+|,+$", "").replaceAll(",+", ",");
 	}
+
+	/**
+	 * 格式化逗号拼接的列表，去除多余的无效的逗号
+	 * @param list
+	 * @return
+	 */
+	public static String formatList(String list){
+		if(StringUtils.isBlank(list)){
+			return "";
+		}
+		return list.replaceAll("\\s*,\\s*",",").replaceAll(",+",",").replaceAll("^,+|,+$","");
+	}
 	/**
 	 * 分割逗号分割的整数列表
 	 * @param str - 逗号分割的整数列表

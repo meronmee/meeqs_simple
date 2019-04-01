@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -399,7 +400,59 @@ public class MyServiceImpl implements MyService {
 		
 		return this.commonDao.update(SqlKey.common_update, params);
 	}
-	
+    
+    /**
+	 * 部分更新一条实体
+	 * @param model 要更新的实体
+	 * @param propNames 要更新的属性字段名称，逗号分割
+	 * @return 更新成功的记录数
+	 */
+	@Override
+	@Transactional(value=Const.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
+	public <T extends Model> int updatePart(T model, String propNames){
+		if(model==null || BaseUtils.isNull0(model.getId())  || BaseUtils.isBlank(BaseUtils.formatList(propNames))){
+			return 0;
+		}
+
+		Set<String> propNameSet = BaseUtils.getStrSet(propNames);
+		if(propNameSet.isEmpty()){
+			return 0;
+		}
+
+		Class modelClass = model.getClass();
+
+		List<Map<String, Object>> pairs = new LinkedList<>();
+
+		List<Field> fields = ReflectionUtils.getDeclaredFields(modelClass);
+		List<String> excludes = Arrays.asList("id", "createTime", "updateTime");//要排除的字段
+		for (Field field : fields) {
+			if(!this.checkField(field, excludes)){
+				continue;
+			}
+
+			if(!propNameSet.contains(field.getName())){
+				continue;
+			}
+
+			String columnName = this.getColumnName(modelClass, field);
+			Object value = ReflectionUtils.getFieldValue(model, field);
+
+			Map<String, Object> pair = new HashMap<>();
+			pair.put("columnName", columnName);
+			pair.put("columnValue", value);
+
+			pairs.add(pair);
+		}
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("id", model.getId());
+		params.put("tableName", this.getTableName(modelClass));
+		params.put("pairs", pairs);
+
+		model.setUpdateTime(new Date());
+
+		return this.commonDao.update(SqlKey.common_update, params);
+	}
 
 	/**
 	 * 逻辑删除实体
@@ -538,7 +591,8 @@ public class MyServiceImpl implements MyService {
         if (table != null && table.value() != null && !"".equals(table.value())) {
         	classname = table.value();
         }
-        return classname;
+        
+        return getSafeColName(classname);
     }
     /**
      * 获取一个实体属性对应的数据库表字段名称
@@ -551,7 +605,7 @@ public class MyServiceImpl implements MyService {
     	Field field = ReflectionUtils.findField(modelClass, fieldName);    	 
     	String columnName = this.getColumnName(modelClass, field);
     	    	
-        return BaseUtils.getFirstNotBlank(columnName, fieldName);
+        return getSafeColName(BaseUtils.getFirstNotBlank(columnName, fieldName));
     }
     /**
      * 获取一个实体属性对应的数据库表字段名称
@@ -571,7 +625,7 @@ public class MyServiceImpl implements MyService {
          		columnName = column.value();
              }
  		}
-        return columnName;
+        return getSafeColName(columnName);
     }
     /**
      * 获取实体对应数据库表字段名称列表，主要用于Select的返回字段
@@ -822,5 +876,13 @@ public class MyServiceImpl implements MyService {
 	 */
 	public <T> T runProc(SqlKey key, Object params){
 		return commonDao.findOne(key, params);
+	}
+	/**
+	 * 获取安全的数据库表名，字段名，避免名称命中数据库保留字
+	 * @param columnName
+	 * @return
+	 */
+	private String getSafeColName(String columnName){
+		return "`"+columnName.replaceAll("`","")+"`";
 	}
 }
