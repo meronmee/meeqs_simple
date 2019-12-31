@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+		
+    <!-- Apache Shiro 访问控制相关配置 -->
+    <!-- see:http://shiro.apache.org/reference.html
+   		http://shiro.apache.org/web.html#default-filters	
+    	http://shiro.apache.org/spring.html	
+    	http://www.jb51.net/article/124272.htm
+    	https://www.cnblogs.com/baifeilong/p/4580622.html
+    	http://onlyonetoone.iteye.com/blog/1931131
+    	http://www.sojson.com/blog/143.html -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<!-- 管理器 -->
+		<property name="securityManager" ref="securityManager" />
+		<!-- 未认证时跳转的错误页面（可在此页面再跳转到登录页或者直接设为登录页） -->
+		<property name="loginUrl" value="/manage/error/unauthenticated.htm" />
+		<!-- 未授权时跳转的错误页面（只针对下面filterChainDefinitions中配置的权限，对注解方式配置的权限无效） -->
+		<property name="unauthorizedUrl" value="/manage/error/unauthorized.htm" />
+			
+		<!-- https://www.cnblogs.com/code-juggler/p/6077106.html -->
+		<!-- http://shiro.apache.org/web.html#default-filters -->
+		<property name="filters">
+			<util:map>
+				<entry key="authc" value-ref="authcFilter" />
+				<entry key="perms" value-ref="permsFilter" />
+				<entry key="roles" value-ref="rolesFilter" />
+			</util:map>
+		</property>
+		
+		<!-- 
+			anon可匿名访问, 
+			authc需认证后才能访问,  user存在用户用户(相当于authc||rememberMe), logout退出filter -->
+		<property name="filterChainDefinitions">
+			<value>
+				 <!-- 对静态资源设置匿名访问 --> 
+			    /public/** = anon 
+			    
+			    <!-- 登录页可匿名访问 --> 
+			    /manage/login.htm = anon 
+			    <!-- 获取验证码的请求可匿名访问 --> 
+			    /manage/captcha.htm = anon 
+			    <!-- 错误页可匿名访问 --> 
+			    /manage/error/** = anon 
+			    		
+			    <!-- 授权控制filter示例， 推荐采用注解的方式 -->
+			    <!-- /manage/user/profile.htm = roles["admin"] -->	
+			    <!-- /manage/user/profile.htm = perms["admin"] -->				    
+			    <!-- /manage/user/profile.json = roles["admin"] -->	 
+			    <!-- /manage/user/profile.json = perms["admin"] -->
+			    
+			    <!-- 其他所有管理端URL都必须认证通过才可以访问 --> 
+			    /manage/** = authc 
+			    			    
+			    <!-- 
+			    	具体请求的授权控制，采用注解的方式：
+			    	@RequiresGuest:允许匿名访问
+			    	@RequiresAuthentication:当前Subject必须在当前session中已经过认证
+			    	@RequiresPermissions:当前Subject需要拥有某些特定的权限才能执行
+			    	@RequiresRoles:当前Subject需要拥有某些特定的角色才能执行
+			    	@RequiresUser:当前Subject必须是应用的用户才能执行
+			    	Shiro的权限注解处理是有内定的处理顺序的，如果有个多个注解的话，前面的通过了才会继续检查后面的，否则直接返回。
+			    	处理顺序依次为(与实际声明顺序无关):RequiresRoles->RequiresPermissions->RequiresAuthentication->RequiresUser->RequiresGuest			    	
+			     -->
+			</value>
+		</property>
+	</bean>
+		
+	<!-- 安全管理器 --> 
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager"> 
+	 	<property name="realm" ref="customRealm" /> 
+	 	<!-- 注入缓存管理器 --> 
+		<property name="cacheManager" ref="cacheManager" /> 
+		<!-- 注入session管理器 --> 
+		<!-- <property name="sessionManager" ref="sessionManager" />  -->
+		<!-- 记住我 --> 
+	 	<property name="rememberMeManager" ref="rememberMeManager" /> 
+	</bean> 
+    
+    <!-- 自定义realm --> 
+	<bean id="customRealm" class="com.meronmee.core.web.shiro.CustomRealm"> 
+	 	<!-- 自定义密码验证器 --> 
+		<property name="credentialsMatcher">
+           <bean class="com.meronmee.core.web.shiro.CustomCredentialsMatcher"/>
+        </property>
+	</bean> 
+		
+	<!-- 自定义authc认证过虑器 -->
+	<bean id="authcFilter" class="com.meronmee.core.web.shiro.CustomAuthenticationFilter"> 
+	 	<!-- 表单中账号的input名称,默认为username --> 
+		<property name="usernameParam" value="username" /> 
+		<!-- 表单中密码的input名称,默认为password --> 
+		<property name="passwordParam" value="password" /> 
+		<!-- 记住我input的名称,默认为rememberMe --> 
+	 	<property name="rememberMeParam" value="rememberMe" /> 
+	</bean>
+	<!-- 自定义perms权限过虑器 -->
+	<bean id="permsFilter" class="com.meronmee.core.web.shiro.CustomPermissionsAuthorizationFilter"/>
+	<!-- 自定义roles权限过虑器 -->
+	<bean id="rolesFilter" class="com.meronmee.core.web.shiro.CustomRolesAuthorizationFilter"/>
+	
+	<!-- 会话管理器 --> 
+	<bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager"> 
+		<!-- session的失效时长，单位毫秒 --> 
+		<property name="globalSessionTimeout" value="600000" /> 
+		<!-- 删除失效的session --> 
+	 	<property name="deleteInvalidSessions" value="true" /> 
+	</bean>
+	
+	<!-- 缓存管理器 --> 
+	<bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager"> 
+	 	<property name="cacheManagerConfigFile" value="classpath:web/spring/shiro-ehcache.xml" />
+	</bean> 
+	
+	<!-- rememberMeManager管理器，写cookie，取出cookie生成用户信息 --> 
+	<bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager"> 
+	 	<property name="cookie" ref="rememberMeCookie" /> 
+	</bean>
+	<!-- 记住我cookie --> 
+	<bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie"> 
+	 	<!-- rememberMe是cookie的名字 --> 
+		<constructor-arg value="rememberMe" />
+		<!-- 记住我cookie生效时间30天 --> 
+	 	<property name="maxAge" value="2592000" /> 
+	</bean> 
+		
+	<!-- 开启Shiro注解-->
+	<!-- 
+		【未深入分析原因】lifecycleBeanPostProcessor和DefaultAdvisorAutoProxyCreator两个bean不要也可以。
+		加上的话，DefaultAdvisorAutoProxyCreator必须设置proxyTargetClass为true，否则授权失败会莫名地转到404错误页，且无任何异常。
+	-->	
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>      
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor">    
+         <property name="proxyTargetClass" value="true" />
+    </bean>    
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<property name="securityManager" ref="securityManager"/>
+    </bean>
+    
+</beans>

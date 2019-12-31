@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="commonMapper">	
+	<!-- 
+		根据ID查询实体
+	 -->
+	<select id="retrieve" parameterType="map" resultType="map">
+		SELECT ${selectColumnNames}
+		FROM ${tableName} o
+		WHERE o.id = #{id}		
+	</select>
+	
+	<!-- 
+		根据某个属性不分页查询实体列表
+	 -->
+	<select id="findByProperty" parameterType="map" resultType="map">
+		SELECT ${selectColumnNames}
+		FROM ${tableName} o
+		
+		<if test="columnValue != null">		 
+		WHERE o.${columnName} = #{columnValue}
+		</if>
+		
+		<if test="columnValues != null">	
+		WHERE o.${columnName} IN		
+			<foreach item="item" index="index" collection="columnValues" open="(" separator="," close=")">
+	            #{item}
+	        </foreach>	
+		</if>
+		
+		ORDER BY o.id DESC
+	</select>
+	
+	<!-- 
+		根据某个属性查询一个实体
+	 -->
+	<select id="findOneByProperty" parameterType="map" resultType="map">
+		SELECT ${selectColumnNames}
+		FROM ${tableName} o
+		WHERE o.${columnName} = #{columnValue}
+		ORDER BY o.id DESC
+		LIMIT 1
+	</select>
+	
+	<!-- 
+		根据一组属性不分页查询实体列表
+	 -->
+	<select id="findByProps" parameterType="map" resultType="map">
+		SELECT ${selectColumnNames}
+		FROM ${tableName} o
+		WHERE 1=1	
+			
+		<foreach item="item" index="index" collection="pairs">
+		   	<if test="item.columnValue != null">
+		   	AND ${item.columnName} = #{item.columnValue}
+			</if>
+			<if test="item.columnValue == null">
+		   	AND ${item.columnName} IS NULL
+			</if>
+       	</foreach>     
+		
+		ORDER BY o.id DESC
+	</select>
+		
+	<!-- 
+		根据一组属性查询一个实体
+	 -->
+	<select id="findOneByProps" parameterType="map" resultType="map">
+		SELECT ${selectColumnNames}
+		FROM ${tableName} o
+		WHERE 1=1	
+			
+		<foreach item="item" index="index" collection="pairs">
+		   	<if test="item.columnValue != null">
+		   	AND ${item.columnName} = #{item.columnValue}
+			</if>
+			<if test="item.columnValue == null">
+		   	AND ${item.columnName} IS NULL
+			</if>
+       	</foreach>     
+		
+		ORDER BY o.id DESC
+		LIMIT 1
+	</select>
+	
+	
+		
+	<!-- 根据实体新增一条表记录  -->
+    <insert id="create" useGeneratedKeys="true" keyProperty="id" parameterType="map">
+		INSERT INTO ${tableName}(${columnNames})
+		VALUES
+		<foreach item="item" index="index" collection="columnValues" open="(" separator="," close=")">
+            #{item}
+        </foreach>		
+	</insert>
+		
+	<!-- 更新实体 -->
+	<update id="update" parameterType="map">
+		UPDATE ${tableName}
+		SET		
+			<foreach item="item" index="index" collection="pairs">
+            ${item.columnName} = #{item.columnValue},
+        	</foreach>                
+			updateTime = NOW()			
+		WHERE id = #{id}
+	</update>
+        		
+	<!-- 逻辑删除实体-->
+	<update id="delete" parameterType="map">
+		UPDATE ${tableName}
+		SET 
+			deleteStatus = 1,  
+			updateTime = NOW()
+		<if test="id != null">		  
+		WHERE id = #{id}
+		</if>
+		<if test="ids != null">	
+		WHERE id IN (${ids})
+		</if>
+	</update>
+	
+	<!-- 物理删除实体 -->
+    <delete id="deletePhysically" parameterType="map">
+		DELETE FROM ${tableName}
+		<if test="id != null">		  
+		WHERE id = #{id}
+		</if>
+		<if test="ids != null">	
+		WHERE id IN (${ids})
+		</if>
+	</delete>   
+</mapper>

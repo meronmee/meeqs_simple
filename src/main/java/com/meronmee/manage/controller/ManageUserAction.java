@@ -1,30 +1,24 @@
 package com.meronmee.manage.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.meronmee.base.api.UserApi;
+import com.meronmee.base.domain.User;
+import com.meronmee.core.common.util.Assert;
+import com.meronmee.core.web.dto.JsonResult;
+import com.meronmee.core.web.dto.Success;
+import com.meronmee.core.web.shiro.UserHolder;
+import com.meronmee.core.web.util.RequestUtils;
 import org.apache.shiro.authz.annotation.Logical;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.meronmee.base.controller.BaseAction;
-import com.meronmee.base.model.User;
-import com.meronmee.base.service.UserService;
-import com.meronmee.core.dto.JsonResult;
-import com.meronmee.core.dto.Success;
-import com.meronmee.core.shiro.UserHolder;
-import com.meronmee.core.utils.Assert;
-import com.meronmee.core.utils.RequestUtils;
-import com.meronmee.core.utils.SettingHolder;
-import com.meronmee.core.utils.SysPropHolder;
-
-import freemarker.template.TemplateModelException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**	
  * 管理端用户控制器
@@ -32,9 +26,11 @@ import freemarker.template.TemplateModelException;
  *
  */
 @Controller
-public class ManageUserAction extends BaseAction{
+public class ManageUserAction  {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+	
 	@Autowired
-	private UserService userService;
+	private UserApi userApi;
 	   
 
 	/**
@@ -62,7 +58,7 @@ public class ManageUserAction extends BaseAction{
 		Long id = RequestUtils.getLongParam(request, "id");
 		Assert.isNotNull(id, "ID不能为空");
 				
-    	User user = this.service.retrieveModel(User.class, id);
+    	User user = this.userApi.retrieve(id);
     	Assert.isNotNull(user, "无效的用户ID");
     	
         viewData.put("user", user); 

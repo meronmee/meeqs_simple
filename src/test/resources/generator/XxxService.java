@@ -1,16 +1,16 @@
-package ${basePackage!}.${moduleRootPackage!}.service;
+package ${basePackage!}.${modelVarName!}.service;
 
 import java.util.List;
 import java.util.Map;
 
-import ${basePackage!}.base.model.${modelClassName!};
+import ${basePackage!}.${modelVarName!}.domain.${modelClassName!};
 
 /**
- * ${modelCNName!} ${moduleRootPackage!}端服务接口
+ * ${modelCNName!}服务端内部服务类
  * @author Meron
  *
  */
-public interface ${moduleClassPrefix!}${modelClassName!}Service {
+public interface ${modelClassName!}Service {
 	/**
 	 * 查询${modelCNName!}列表
 	 * @param offset
@@ -18,10 +18,4 @@ public interface ${moduleClassPrefix!}${modelClassName!}Service {
 	 * @return
 	 */
 	List<${modelClassName!}> getList(int offset, int limit);
-	
-	/**
-	 * 查询${modelCNName!}列表
-	 * @return
-	 */
-	public List<Map<String, Object>> getList();
 }

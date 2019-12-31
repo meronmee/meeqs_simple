@@ -47,9 +47,9 @@
     
 	<logger name="com.meronmee" level="INFO"/>
     <!-- 专用于HttpUtils的日志 -->
-	<logger name="com.meronmee.core.utils.HttpUtils" level="INFO">
+	<logger name="com.meronmee.core.common.util.HttpUtils" level="INFO" additivity="true">
 	    <appender-ref ref="httpAppender" />  
-	</logger>  
+	</logger>
 	<!-- 设置常用组件日志级别 -->
 	<logger name="org.springframework" level="ERROR"/>
 		
@@ -61,7 +61,7 @@
 	</logger>
     -->
 
-	<root level="ERROR">
+	<root level="INFO">
 		<appender-ref ref="stdout"/>
 		<appender-ref ref="logfile"/>
 	</root>  

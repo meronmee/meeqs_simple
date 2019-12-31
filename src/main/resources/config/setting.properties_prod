@@ -1,7 +1,0 @@
-#---------------------------------------------------------------------
-#						\u4e1a\u52a1\u914d\u7f6e\u4fe1\u606f\uff08\u751f\u4ea7\u73af\u5883\uff09
-# \u5982\u679c\u6b64\u5904\u4e0esetting.common.properties\u4e2d\u5b58\u5728\u540c\u540d\u7684key\uff0c\u4f18\u5148\u4f7f\u7528\u6b64\u5904\u914d\u7f6e
-#----------------------------------------------------------------------
-
-#MyBatis\u67e5\u8be2\u5206\u9875\u5217\u8868\u65f6\u56fa\u5b9a\u7684totalCount\u503c\uff0c\u4e0d\u914d\u7f6e\u8be5\u53c2\u6570\u5219\u4f7f\u7528\u6570\u636e\u5e93\u7edf\u8ba1\u503c
-db.query.page.fixed.total=1000

@@ -1,24 +1,21 @@
 package com.meronmee.local;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.meronmee.core.common.util.BaseUtils;
+import com.meronmee.core.common.util.FileUtil;
+import com.meronmee.test.Log;
+import freemarker.cache.FileTemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
-import com.meronmee.core.utils.BaseUtils;
-import com.meronmee.core.utils.FileUtil;
-import com.meronmee.test.Log;
-
-import freemarker.cache.FileTemplateLoader;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * 快速生成一个新模块相关的基础代码，包括：Mapper文件、Model、Controller、Dao、Service
- * Model、Dao统一放在base一级包下面
+ * 快速生成一个新模块相关的基础代码，包括：Mapper文件、Model、Controller、Dao、Service等
  * 
  * @author Meron
  *
@@ -34,10 +31,6 @@ public class ModuleGenerator {
 	
 	/**目标模块中文名称*/
 	public static final String MODULE_CN_NAME = "订单";
-	
-	/**目标模块所属一级包, app:客户端功能, manage:管理端功能. 多个用逗号隔开 */
-	public static final String MODULE_ROOT_PACKAGE = "app,manage";
-	
 
 	//内部变量
 	//---------------------------	
@@ -65,51 +58,71 @@ public class ModuleGenerator {
         data.put("modelClassName", modelClassName);//如：Order
         data.put("modelVarName", StringUtils.uncapitalize(MODULE_EN_NAME));//如：order
         data.put("modelCNName", MODULE_CN_NAME);//如：订单
-           
+
+        //----------api----------
         Log.info("生成Model...");  
         Template templateModel = freemarkerConfiguration.getTemplate("Xxx.java", ENCODING);
-        String filePathModel = BaseUtils.mergePath(codeDir, "/base/model/"+modelClassName+".java");        
-        saveDataToFile(data, templateModel, filePathModel);     
-         
+        String filePathModel = BaseUtils.mergePath(codeDir, "/"+data.get("modelVarName")+"/domain/"+modelClassName+".java");
+        saveDataToFile(data, templateModel, filePathModel);
+
+        Log.info("生成Api...");
+        Template templateApi = freemarkerConfiguration.getTemplate("XxxApi.java", ENCODING);
+        String filePathApi = BaseUtils.mergePath(codeDir, "/"+data.get("modelVarName")+"/api/"+modelClassName+"Api.java");
+        saveDataToFile(data, templateApi, filePathApi);
+
+        Log.info("生成Constant...");
+        Template templateConst = freemarkerConfiguration.getTemplate("XxxConst.java", ENCODING);
+        String filePathConst = BaseUtils.mergePath(codeDir, "/"+data.get("modelVarName")+"/constant/"+modelClassName+"Const.java");
+        saveDataToFile(data, templateConst, filePathConst);
+
+        //----------service----------
         Log.info("生成Mapper..."); 
         Template templateMapper = freemarkerConfiguration.getTemplate("XxxMapper.xml", ENCODING);
         String filePathMapper = BaseUtils.mergePath(mapperDir, data.get("modelClassName")+"Mapper.xml");        
         saveDataToFile(data, templateMapper, filePathMapper); 
-       
 
         Log.info("生成Dao..."); 
         Template templateDao = freemarkerConfiguration.getTemplate("XxxDao.java", ENCODING);
-        String filePathDao = BaseUtils.mergePath(codeDir, "/base/dao/"+modelClassName+"Dao.java");        
+        String filePathDao = BaseUtils.mergePath(codeDir, "/"+data.get("modelVarName")+"/dao/"+modelClassName+"Dao.java");
         saveDataToFile(data, templateDao, filePathDao);
-               
-        String[] rootPackages = MODULE_ROOT_PACKAGE.split(",");
-        for(String rootPackage : rootPackages){
-        	 if(StringUtils.isBlank(rootPackage)){
-        		continue;
-        	 }
-        	 rootPackage = rootPackage.trim();
-        	 String  moduleRootPackage = StringUtils.uncapitalize(rootPackage);
-        	 String  moduleClassPrefix = String.valueOf(rootPackage.charAt(0)).toUpperCase()+rootPackage.substring(1);
-        	 
-        	 data.put("moduleRootPackage", moduleRootPackage);//如: app
-             data.put("moduleClassPrefix", moduleClassPrefix);//如: App
-             
-             Log.info("生成"+moduleRootPackage+"下的Controller..."); 
-             Template templateController = freemarkerConfiguration.getTemplate("XxxAction.java", ENCODING);
-             String filePathController = BaseUtils.mergePath(codeDir, moduleRootPackage, "/controller/"+moduleClassPrefix+modelClassName+"Action.java");        
-             saveDataToFile(data, templateController, filePathController);     
-             
-             Log.info("生成"+moduleRootPackage+"下的Service..."); 
-             Template templateService = freemarkerConfiguration.getTemplate("XxxService.java", ENCODING);
-             String filePathService = BaseUtils.mergePath(codeDir, moduleRootPackage, "/service/"+moduleClassPrefix+modelClassName+"Service.java");        
-             saveDataToFile(data, templateService, filePathService); 
-                    
-             Log.info("生成"+moduleRootPackage+"下的ServiceImpl..."); 
-             Template templateServiceImpl = freemarkerConfiguration.getTemplate("XxxServiceImpl.java", ENCODING);
-             String filePathServiceImpl = BaseUtils.mergePath(codeDir, moduleRootPackage, "/service/impl/"+moduleClassPrefix+modelClassName+"ServiceImpl.java");        
-             saveDataToFile(data, templateServiceImpl, filePathServiceImpl); 
-        }
-        
+
+        Log.info("生成ApiImpl...");
+        Template templateApiImpl = freemarkerConfiguration.getTemplate("XxxApiImpl.java", ENCODING);
+        String filePathApiImpl = BaseUtils.mergePath(codeDir, "/"+data.get("modelVarName")+"/service/impl/"+modelClassName+"ApiImpl.java");
+        saveDataToFile(data, templateApiImpl, filePathApiImpl);
+
+        Log.info("生成Service...");
+        Template templateService = freemarkerConfiguration.getTemplate("XxxService.java", ENCODING);
+        String filePathService = BaseUtils.mergePath(codeDir, "/"+data.get("modelVarName")+"/service/" + modelClassName+"Service.java");
+        saveDataToFile(data, templateService, filePathService);
+
+        Log.info("生成ServiceImpl...");
+        Template templateServiceImpl = freemarkerConfiguration.getTemplate("XxxServiceImpl.java", ENCODING);
+        String filePathServiceImpl = BaseUtils.mergePath(codeDir, "/"+data.get("modelVarName")+"/service/impl/"+modelClassName+"ServiceImpl.java");
+        saveDataToFile(data, templateServiceImpl, filePathServiceImpl);
+
+        //----------web----------
+        Log.info("生成Controller...");
+        Template templateController = freemarkerConfiguration.getTemplate("XxxAction.java", ENCODING);
+        String filePathController = BaseUtils.mergePath(codeDir, "/"+data.get("modelVarName")+"/controller/"+modelClassName+"Action.java");
+        saveDataToFile(data, templateController, filePathController);
+
+        //----------manage----------
+        Log.info("生成ManageController...");
+        Template templateManageController = freemarkerConfiguration.getTemplate("ManageXxxAction.java", ENCODING);
+        String filePathManageController = BaseUtils.mergePath(codeDir, "/manage/controller/Manage"+modelClassName+"Action.java");
+        saveDataToFile(data, templateManageController, filePathManageController);
+
+        Log.info("生成ManageService...");
+        Template templateManageService = freemarkerConfiguration.getTemplate("ManageXxxService.java", ENCODING);
+        String filePathManageService = BaseUtils.mergePath(codeDir, "/manage/service/Manage" + modelClassName+"Service.java");
+        saveDataToFile(data, templateManageService, filePathManageService);
+
+        Log.info("生成ManageServiceImpl...");
+        Template templateManageServiceImpl = freemarkerConfiguration.getTemplate("ManageXxxServiceImpl.java", ENCODING);
+        String filePathManageServiceImpl = BaseUtils.mergePath(codeDir, "/manage/service/impl/Manage"+modelClassName+"ServiceImpl.java");
+        saveDataToFile(data, templateManageServiceImpl, filePathManageServiceImpl);
+
         Log.info("生成新模块基础代码完成！");     
 	}
 	
@@ -119,8 +132,8 @@ public class ModuleGenerator {
     	rootDir = new File("").getCanonicalPath();
     	//模板文件目录，如：E:\WorkSpace\eclipse\mee\meeqs_simple\src\test\resources\generator
     	templateDir = BaseUtils.mergePath(rootDir, "src/test/resources/generator");
-    	//模板文件目录，如：E:\WorkSpace\eclipse\mee\meeqs_simple\src\main\resources\mapper
-    	mapperDir = BaseUtils.mergePath(rootDir, "src/main/resources/mapper");
+    	//模板文件目录，如：E:\WorkSpace\eclipse\mee\meeqs_simple\src\main\resources\service\mapper
+    	mapperDir = BaseUtils.mergePath(rootDir, "src/main/resources/service/mapper");
     	//生成代码文件基础目录，如：E:\WorkSpace\eclipse\mee\meeqs_simple\src\main\java\com\meronmee
     	codeDir = BaseUtils.mergePath(rootDir, "src/main/java", BASE_PACKAGE.replace('.', '/'));
     	

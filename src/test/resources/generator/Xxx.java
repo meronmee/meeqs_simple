@@ -1,10 +1,10 @@
-package ${basePackage!}.base.model;
+package ${basePackage!}.${modelVarName!}.domain;
 
-import ${basePackage!}.core.annotation.Table;
-import ${basePackage!}.core.model.Model;
+import ${basePackage!}.core.api.annotation.Table;
+import ${basePackage!}.core.api.domain.Model;
 
 /**
- * 
+ * ${modelCNName!}实体
  * @author Meron
  *
  */

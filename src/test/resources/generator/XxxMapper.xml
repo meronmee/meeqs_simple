@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
-<mapper namespace="${basePackage!}.base.dao.${modelClassName!}Dao">
+<mapper namespace="${basePackage!}.${modelVarName!}.dao.${modelClassName!}Dao">
 	<!-- namespace需要与DAO层接口带包完整路径一致，此处的方法语句ID和参数要和DAO中一致 -->
-	
+    <!-- ${modelCNName!}实体中对应的表字段 -->
+    <sql id="_SelectAllColumns">
+        o.`id`,
+        o.`createTime`,
+        o.`updateTime`,
+        o.`deleteStatus`,
+        o.`username
+    </sql>
+
 	<!-- =================================== -->
 	<!-- 			App端相关方法			 -->
 	<!-- =================================== -->
 	
-	<select id="getList" resultType="${modelClassName!}">
-		SELECT *
-		FROM ${modelVarName!}
+	<select id="getList" resultType="${basePackage!}.${modelVarName!}.domain.${modelClassName!}">
+        SELECT
+        <include refid="_SelectAllColumns"/>
+		FROM ${modelVarName!} o
 		WHERE field1 = ${r'#{field1}'} 
 		limit ${r'#{offset}'},${r'#{limit}'}
 	</select>

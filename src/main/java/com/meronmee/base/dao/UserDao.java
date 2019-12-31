@@ -4,7 +4,8 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.meronmee.base.model.User;
+import com.meronmee.base.domain.User;
+ 
 
 /**
  * 用户Dao<p>

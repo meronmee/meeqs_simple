@@ -1,10 +1,17 @@
-package ${basePackage!}.${moduleRootPackage!}.controller;
+package ${basePackage!}.${modelVarName!}.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.shiro.authz.annotation.Logical;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
+import com.alibaba.fastjson.JSONObject;
+import ${basePackage!}.base.api.UserApi;
+import ${basePackage!}.base.domain.User;
+import ${basePackage!}.core.common.util.Assert;
+import ${basePackage!}.core.web.dto.AuthError;
+import ${basePackage!}.core.web.dto.JsonResult;
+import ${basePackage!}.core.web.dto.Success;
+import ${basePackage!}.core.web.util.RequestInfoUtils;
+import ${basePackage!}.core.web.util.RequestUtils;
+import ${basePackage!}.${modelVarName!}.api.${modelClassName!}Api;
+import ${basePackage!}.${modelVarName!}.domain.${modelClassName!};
+import org.apache.shiro.authz.UnauthenticatedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,39 +20,37 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.alibaba.fastjson.JSONObject;
-import ${basePackage!}.base.controller.BaseAction;
-import ${basePackage!}.base.model.User;
-import ${basePackage!}.base.model.${modelClassName!};
-import ${basePackage!}.core.dto.JsonResult;
-import ${basePackage!}.core.dto.Success;
-import ${basePackage!}.core.service.MyService;
-import ${basePackage!}.core.utils.Assert;
-import ${basePackage!}.core.utils.RequestUtils;
-import ${basePackage!}.${moduleRootPackage!}.service.${moduleClassPrefix!}${modelClassName!}Service;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import freemarker.template.TemplateModelException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
- * ${modelCNName!} ${moduleClassPrefix!} 端控制器
+ * ${modelCNName!}控制器
  * @author Meron
  *
  */
 @Controller
-public class ${moduleClassPrefix!}${modelClassName!}Action extends BaseAction {
-    
+public class ${modelClassName!}Action {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
-	protected MyService service;    
-    
+    private ${modelClassName!}Api ${modelVarName!}Api;
     @Autowired
-	protected ${moduleClassPrefix!}${modelClassName!}Service ${moduleRootPackage!}${modelClassName!}Service; 
+    private UserApi userApi;
 
     
     /**
 	 * ${modelCNName!}页面
 	 */
-    @RequestMapping(value = "/${moduleRootPackage!}/${modelVarName!}/demo.htm",  method = RequestMethod.GET)
+    @RequestMapping(value = "/app/${modelVarName!}/demo.htm",  method = RequestMethod.GET)
     public String ${modelVarName!}Page(HttpServletRequest request, HttpServletResponse response, ModelMap viewData){
+        User user = userApi.getCurrentUser(RequestInfoUtils.getRequestInfo(request));
+        if(user == null){
+            throw new UnauthenticatedException("请登录后再操作");
+        }
+
     	//参数处理
 		String aaa = RequestUtils.getStringParam(request, "aaa");
 		Long bbb = RequestUtils.getLongParam(request, "bbb");
@@ -55,19 +60,24 @@ public class ${moduleClassPrefix!}${modelClassName!}Action extends BaseAction {
 		Assert.isNotNull0(ccc, "ccc不能为空");
 			
 		//业务逻辑
-    	${modelClassName!} ${modelVarName!} = this.service.retrieveModel(${modelClassName!}.class, 1L);
+    	${modelClassName!} ${modelVarName!} = this.${modelVarName!}Api.retrieve(1L);
     	
         viewData.put("${modelVarName!}", ${modelVarName!}); 
         
         //返回模板
-        return "${moduleRootPackage!}/${modelVarName!}/${modelVarName!}_demo";
+        return "${modelVarName!}/${modelVarName!}_demo";
     }  
 
     /**
 	 * ${modelCNName!}数据
 	 */
-    @RequestMapping(value = "/${moduleRootPackage!}/${modelVarName!}/demo.json", method = RequestMethod.POST)
+    @RequestMapping(value = "/app/${modelVarName!}/demo.json", method = RequestMethod.POST)
     public JsonResult ${modelVarName!}Data(HttpServletRequest request, HttpServletResponse response) {
+        User user = userApi.getCurrentUser(RequestInfoUtils.getRequestInfo(request));
+        if(user == null){
+            return new AuthError();
+        }
+
     	//参数处理
     	String aaa = RequestUtils.getStringParam(request, "aaa");
 		Long bbb = RequestUtils.getLongParam(request, "bbb");
@@ -77,7 +87,9 @@ public class ${moduleClassPrefix!}${modelClassName!}Action extends BaseAction {
 		Assert.isNotNull0(ccc, "ccc不能为空");
 		
     	//业务逻辑
-		JSONObject result = new JSONObject();
+        ${modelClassName!} ${modelVarName!} = this.${modelVarName!}Api.retrieve(1L);
+
+        JSONObject result = new JSONObject();
 		result.put("key", "value");	
 		
 		//返回

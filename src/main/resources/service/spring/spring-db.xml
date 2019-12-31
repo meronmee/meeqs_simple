@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:p="http://www.springframework.org/schema/p"
+	   xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+
+	   xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://shardingsphere.apache.org/schema/shardingsphere/masterslave
+		http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+">
+	<!-- 数据源Druid-主库 -->
+	<bean id="dataSourceMaster" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<!-- 用户名 -->
+		<property name="username" value="${db.jdbc.username}" />
+		<!-- 用户密码 -->
+		<property name="password" value="${db.jdbc.password}" />
+		<!-- 驱动类名 -->
+		<property name="driverClassName" value="${db.jdbc.driver}" />
+		<!-- 连接地址 -->
+		<property name="url" value="${db.jdbc.url.master}" />
+		<!--初始化连接数-->
+		<property name="initialSize" value="${db.druid.pool.initialSize.master}" />
+		<!-- 最大并发连接数 -->
+		<property name="maxActive" value="${db.druid.pool.maxActive.master}" />
+		<!-- 最小空闲连接数 -->
+		<property name="minIdle" value="${db.druid.pool.minIdle.master}" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="${db.druid.pool.maxWait.master}" />
+		<!-- 超过时间限制是否回收 -->
+		<property name="removeAbandoned" value="${db.druid.pool.removeAbandoned.master}" />
+		<!-- 超过时间限制多长； -->
+		<property name="removeAbandonedTimeout" value="${db.druid.pool.removeAbandonedTimeout.master}" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="${db.druid.pool.timeBetweenEvictionRunsMillis.master}" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="${db.druid.pool.minEvictableIdleTimeMillis.master}" />
+		<!-- 用来检测连接是否有效的sql，要求是一个查询语句-->
+		<property name="validationQuery" value="SELECT 'x'" />
+		<!-- 申请连接的时候检测 -->
+		<property name="testWhileIdle" value="true" />
+		<!-- 申请连接时执行validationQuery检测连接是否有效，配置为true会降低性能 -->
+		<property name="testOnBorrow" value="false" />
+		<!-- 归还连接时执行validationQuery检测连接是否有效，配置为true会降低性能  -->
+		<property name="testOnReturn" value="false" />
+		<!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="${db.druid.pool.maxPoolPreparedStatementPerConnectionSize.master}" />
+        <property name="logAbandoned" value="true" /><!-- 关闭abanded连接时输出错误日志 -->
+
+		<!-- proxyFilters方式配置监控统计拦截的filters -->
+		<property name="proxyFilters">
+			<list>
+				<ref bean="stat-filter" />
+				<ref bean="log-filter"/>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 数据源Druid-从库-->
+	<bean id="dataSourceSlave1" parent="dataSourceMaster" init-method="init" destroy-method="close">
+        <!-- 连接地址 -->
+        <property name="url" value="${db.jdbc.url.slave1}" />
+        <!--初始化连接数-->
+        <property name="initialSize" value="${db.druid.pool.initialSize.slave1}" />
+        <!-- 最大并发连接数 -->
+        <property name="maxActive" value="${db.druid.pool.maxActive.slave1}" />
+        <!-- 最小空闲连接数 -->
+        <property name="minIdle" value="${db.druid.pool.minIdle.slave1}" />
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="${db.druid.pool.maxWait.slave1}" />
+        <!-- 超过时间限制是否回收 -->
+        <property name="removeAbandoned" value="${db.druid.pool.removeAbandoned.slave1}" />
+        <!-- 超过时间限制多长； -->
+        <property name="removeAbandonedTimeout" value="${db.druid.pool.removeAbandonedTimeout.slave1}" />
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="${db.druid.pool.timeBetweenEvictionRunsMillis.slave1}" />
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="${db.druid.pool.minEvictableIdleTimeMillis.slave1}" />
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="${db.druid.pool.maxPoolPreparedStatementPerConnectionSize.slave1}" />
+    </bean>
+
+	<!-- shardingjdbc 负载均衡策略配置方式 -->
+    <master-slave:load-balance-algorithm id="randomStrategy" type="RANDOM" />
+
+	<!-- shardingjdbc 主从配置 -->
+	<master-slave:data-source id="masterSlaveDataSource" master-data-source-name="dataSourceMaster"  slave-data-source-names="dataSourceSlave1" strategy-ref="randomStrategy">
+		<master-slave:props>
+			<prop key="sql.show">${db.druid.shardingjdbc.sql.show}</prop>
+			<prop key="executor.size">${db.druid.shardingjdbc.executor.size}</prop>
+		</master-slave:props>
+	</master-slave:data-source>
+
+	<!--sql执行监控-->
+	<bean id="stat-filter" class="com.alibaba.druid.filter.stat.StatFilter">
+		<property name="slowSqlMillis" value="10000" />
+		<property name="logSlowSql" value="true" />
+		<property name="mergeSql" value="true" />
+	</bean>
+	<!--log4j日志记录SQL执行情况-->
+	<bean id="log-filter" class="com.alibaba.druid.filter.logging.Log4jFilter">
+		<property name="resultSetLogEnabled" value="false" />
+		<property name="statementExecutableSqlLogEnable" value="true" />
+	</bean>
+
+    <!--2、配置SqlSessionFactory对象-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--注入数据库连接池-->
+        <property name="dataSource" ref="masterSlaveDataSource"/>
+        <!--配置mybatis全局配置文件:mybatis-config.xml-->
+        <property name="configLocation" value="classpath:service/mybatis.xml"/>
+        <!--扫描sql配置文件:mapper需要的xml文件-->
+        <property name="mapperLocations" value="classpath*:service/mapper/*.xml"/>
+        <property name="plugins">
+        <array>
+            <bean class="com.github.pagehelper.PageInterceptor">
+                <!-- 这里的几个配置主要演示如何使用，如果不理解，一定要去掉下面的配置 -->
+                <property name="properties">
+                    <value>helperDialect=mysql</value>
+                </property>
+            </bean>
+        </array>
+    </property>
+    </bean>
+
+	<!--3、配置扫描Dao接口包,动态实现DAO接口,注入到spring容器-->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!--注入SqlSessionFactory-->
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+		<!-- 给出需要扫描的Dao接口,多个用,隔开-->
+		<property name="basePackage" value="${mapper.scanner.dao.package}"/>
+		<!--
+			MapperScannerConfigurer的加载优先PropertySourcesPlaceholderConfigurer，无法使用占位符，通过此参数来刷新配置
+			MapperScannerConfigurer#processPropertyPlaceHolders
+			https://blog.csdn.net/jackyechina/article/details/52957525
+			https://yq.aliyun.com/articles/268860
+		 -->
+		<property name="processPropertyPlaceHolders" value="true"/>
+	</bean>
+	<!--4、配置sqlSessionTemplate-->
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+
+	<!--5、配置事务管理器(mybatis采用的是JDBC的事务管理器)-->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="masterSlaveDataSource"/>
+	</bean>
+
+	<!--6、配置基于注解的声明式事务,默认使用注解来管理事务行为-->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+
+	<!-- 7、spring自己的缓存管理器，这里定义了两个缓存位置名称 ，既注解中的value -->
+	<bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
+		<property name="caches">
+			<set>
+				<bean
+						class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean"
+						p:name="default" />
+			</set>
+		</property>
+	</bean>
+    
+</beans>

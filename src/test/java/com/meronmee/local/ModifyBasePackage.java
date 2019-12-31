@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 
-import com.meronmee.core.utils.BaseUtils;
+import com.meronmee.core.common.util.BaseUtils;
 import com.meronmee.test.Log;
 
 /**
