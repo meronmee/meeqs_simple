@@ -36,15 +36,15 @@ Logback | 1.2.3
 |--src/main/java		- Java主程序目录
 |	|-- com.meronmee	- 基础包名，可以通过提供的工具ModifyBasePackage.java来修改
 |		|-- com.meronmee.core	- 核心代码包
-|			|-- com.meronmee.core.api		- api模块，主要包含Service接口定义，实体对象，常量等。该模块需要保证尽量轻量，尽量不依赖其他模块或jar包
-|			|-- com.meronmee.core.service	- 服务层公共代码组件，比如数据库操作、服务层特有的工具等
-|			|-- com.meronmee.core.web	    - Web层公共代码组件，主要是MVC、Shiro相关的
-|			`-- com.meronmee.core.common	- 服务层和Web层共用的代码组件，包括一些常用工具类等
+|			|-- com.meronmee.core.api       - api模块，主要包含Service接口定义，实体对象，常量等。该模块需要保证尽量轻量，尽量不依赖其他模块或jar包
+|			|-- com.meronmee.core.service   - 服务层公共代码组件，比如数据库操作、服务层特有的工具等
+|			|-- com.meronmee.core.web       - Web层公共代码组件，主要是MVC、Shiro相关的
+|			`-- com.meronmee.core.common    - 服务层和Web层共用的代码组件，包括一些常用工具类等
 |		|-- com.meronmee.base	- 基础业务代码包
-|			|-- com.meronmee.demo.api		    - 基础业务相关的api
-|			|-- com.meronmee.demo.constant	    - 基础业务相关的常量字典
-|			|-- com.meronmee.demo.dao	        - 基础业务相关的服务层数据库DAO
-|			|-- com.meronmee.demo.service	    - 基础业务相关的服务层服务
+|			|-- com.meronmee.demo.api           - 基础业务相关的api
+|			|-- com.meronmee.demo.constant      - 基础业务相关的常量字典
+|			|-- com.meronmee.demo.dao           - 基础业务相关的服务层数据库DAO
+|			|-- com.meronmee.demo.service       - 基础业务相关的服务层服务
 |			`-- com.meronmee.demo.controller    - 基础业务相关的Web层控制器
 |		|-- com.meronmee.demo	- 示例业务代码包
 |			|-- com.meronmee.demo.api		    - 示例业务相关的api
@@ -71,8 +71,8 @@ Logback | 1.2.3
 |--src/test/java		- 测试目录
 |	|-- com.meronmee.test	- 测试代码目录
 |	`-- com.meronmee.local	- 本地工具目录
-|	    |-- ModifyBasePackage	- 可以修改基础包名com.meronmee为想要的报名
-|	    `-- ModuleGenerator	    - 按照规范目录结构创建一个新模块
+|	    |-- ModifyBasePackage   - 可以修改基础包名com.meronmee为想要的报名
+|	    `-- ModuleGenerator     - 按照规范目录结构创建一个新模块
 |		
 `--src/test/resources	- 测试配置文件目录
 	|-- doc	- 相关文档
@@ -91,5 +91,5 @@ Logback | 1.2.3
   - build_prod.bat 用于打包生产版本（使用src/main/resources/*/config/*.properties_prod配置信息）
 	
 # 开发说明
-1. 所有模块都应该按照api、constant、dao、service、controller这样的结构来搭建，其中api和constant属于api层，需要保持干净轻量。dao、service属于服务层，可以直接访问这个模块对应的数据库表，但是不能访问非本模块的表，非本模块的表需要通过其他模块的服务来间接访问。服务层的应该包含大部分层的业务逻辑。service下也可以有非api的接口和实现，这类接口和实现应该只给本模块使用，不应对其他模块开放。模块之间的交互都必须通过api进行。controller属于Web层，对外提供http接口，web层不应该有太多的业务逻辑，一般只是做输入参数的整理校验，输出参数的整理，核心业务逻辑都应该放到服务层，然后通过api来和各模块的服务层交互。
+1. 所有模块都应该按照api、constant、dao、service、controller这样的结构来搭建，其中api和constant属于api层，需要保持干净轻量。dao、service属于服务层，可以直接访问这个模块对应的数据库表，但是不能访问非本模块的表，非本模块的表需要通过其他模块的服务来间接访问。服务层应该包含大部分的业务逻辑。service下也可以有非api的接口和实现，这类接口和实现应该只给本模块使用，不应对其他模块开放。模块之间的交互都必须通过api进行。controller属于Web层，对外提供http接口，web层不应该有太多的业务逻辑，一般只是做输入参数的整理校验，输出参数的整理，核心业务逻辑都应该放到服务层，然后通过api来和各模块的服务层交互。
 2. Web层绝对不能直接访问数据库！！
