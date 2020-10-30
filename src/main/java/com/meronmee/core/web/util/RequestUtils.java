@@ -174,8 +174,99 @@ public class RequestUtils {
 		String value = request.getParameter(name);		
 		return getFirstNotBlank(value, defaultValue);
 	}
-	
 
+    /**
+     * 尽最大可能去获取一个参数值
+     * @param request
+     * @param names  如果参数有多个别名，用逗号隔开
+     * @return
+     */
+    public static String getParamTryBest(HttpServletRequest request, String names){
+        return getParamTryBest(request, names, null);
+    }
+    /**
+     * 尽最大可能去获取一个参数值
+     * @param request
+     * @param names  如果参数有多个别名，用逗号隔开
+     * @param way  获取参数的途径，为空则默认为"req,header,cookie,reqattr,session"
+     * @return
+     */
+    public static String getParamTryBest(HttpServletRequest request, String names, String way){
+        if(request == null){
+            request = getRequest();
+        }
+        if(request == null){
+            return null;
+        }
+        if(StringUtils.isBlank(names)){
+            return null;
+        }
+        if(StringUtils.isBlank(way)){
+            way = "req,header,cookie,reqattr,session";
+        }
+
+        way = ","+way+",";
+
+        boolean breq = way.contains(",req,");
+        boolean bheader = way.contains(",header,");
+        boolean bcookie = way.contains(",cookie,");
+        boolean breqattr = way.contains(",reqattr,");
+        boolean bsession = way.contains(",session,");
+
+        HttpSession session = null;
+        if(bsession){
+            session = request.getSession(false);
+            if(session == null){
+                bsession = false;
+            }
+        }
+
+        String [] nameArr = names.split(",");
+        String value = null;
+        if(breq){
+            for(String name : nameArr) {
+                value = RequestUtils.getStringParam(request, name);
+                if (StringUtils.isNotBlank(value)) {
+                    return value;
+                }
+            }
+        }
+        if(bheader){
+            for(String name : nameArr) {
+                value = request.getHeader(name);
+                if (StringUtils.isNotBlank(value)) {
+                    return value;
+                }
+            }
+        }
+        if(bcookie){
+            for(String name : nameArr) {
+                value = CookieUtils.getCookieValue(request, name);
+                if (StringUtils.isNotBlank(value)) {
+                    return value;
+                }
+            }
+        }
+        if(breqattr){
+            for(String name : nameArr) {
+                value = BaseUtils.toString(request.getAttribute(name));
+                if (StringUtils.isNotBlank(value)) {
+                    return value;
+                }
+            }
+        }
+
+        if(bsession){
+            for(String name : nameArr) {
+                value = BaseUtils.toString(session.getAttribute(name));
+                if (StringUtils.isNotBlank(value)) {
+                    return value;
+                }
+            }
+        }
+
+        return null;
+    }
 
 	/**
 	 * 从各个途径获取请求参数

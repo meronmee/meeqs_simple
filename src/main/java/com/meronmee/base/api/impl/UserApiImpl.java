@@ -1,13 +1,12 @@
-package com.meronmee.base.service.impl;
+package com.meronmee.base.api.impl;
 
 import com.meronmee.base.api.UserApi;
 import com.meronmee.base.dao.UserDao;
 import com.meronmee.base.domain.User;
 import com.meronmee.core.api.domain.RequestInfo;
-import com.meronmee.core.common.util.Assert;
 import com.meronmee.core.common.util.BaseUtils;
 import com.meronmee.core.common.util.ShortCache;
-import com.meronmee.core.service.database.DateService;
+import com.meronmee.core.service.database.DataService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,7 @@ public class UserApiImpl implements UserApi{
 	@Autowired
 	private UserDao userDao;
 	@Autowired
-	private DateService dataService;
+	private DataService dataService;
 
     /**
      * 查询用户
@@ -34,7 +33,7 @@ public class UserApiImpl implements UserApi{
         if(BaseUtils.isNull0(userId)){
             return null;
         }
-        return dataService.retrieveModel(User.class, userId);
+        return dataService.retrieve(User.class, userId);
     }
 
     /**
@@ -186,7 +185,7 @@ public class UserApiImpl implements UserApi{
 		if(StringUtils.isBlank(phone)){
 			return null;
 		}
-		return this.dataService.findOneModelByProperty(User.class, "mobile", phone);
+		return this.dataService.findOneByProperty(User.class, "mobile", phone);
 	}
 
 	/**
@@ -199,7 +198,7 @@ public class UserApiImpl implements UserApi{
 		if(StringUtils.isBlank(username)){
 			return null;
 		}
-		return this.dataService.findOneModelByProperty(User.class, "username", username);
+		return this.dataService.findOneByProperty(User.class, "username", username);
 	}
 	
 	/**

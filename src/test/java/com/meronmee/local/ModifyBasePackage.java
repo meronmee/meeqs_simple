@@ -18,6 +18,12 @@ public class ModifyBasePackage {
 	public static final String BASE_PACKAGE = "com.meronmee";
 	/**目标基础包名*/
 	public static final String NEW_BASE_PACKAGE = "com.abc.def";
+
+    /**当前项目名*/
+    public static final String PRJ_NAME = "meeqs";
+    /**目标项目名*/
+    public static final String NEW_PRJ_NAME = "mall4jd";
+
 	/**文件编码*/
 	public static final String ENCODING = "UTF-8";  
 	
@@ -104,17 +110,22 @@ public class ModifyBasePackage {
 				//Log.info("忽略文件[空文件]:", fileName);	
 				return;
 			}
-			
+
+            //---------------修改包名-------------
 			String newContent = basePackagePattern.matcher(content).replaceAll(NEW_BASE_PACKAGE);
 			newContent = basePackageDirPattern.matcher(newContent).replaceAll(newBasePackageDir);
-			
+
+            //---------------修改项目名-------------
+            newContent = newContent.replaceAll(PRJ_NAME, NEW_PRJ_NAME);
+
 			if(!content.equals(newContent)){
 				Log.info("处理文件:", fileName);
 				write2File(file, newContent);
 			} else {
 				//Log.info("忽略文件[无变化]:", fileName);				
 			}
-			
+
+
 			content = null;
 			newContent = null;
 		}

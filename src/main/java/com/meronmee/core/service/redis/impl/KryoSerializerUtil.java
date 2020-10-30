@@ -1,4 +1,4 @@
-package com.meronmee.core.common.redis;
+package com.meronmee.core.service.redis.impl;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;

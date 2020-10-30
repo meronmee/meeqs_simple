@@ -37,7 +37,7 @@
 	</bean>
 	
     <!-- 引入其他Spring配置 --> 
-    <import resource="classpath*:common/spring/*.xml"/>
-    <import resource="classpath*:service/spring/*.xml"/>
-    <import resource="classpath*:web/spring/*.xml"/>
+    <import resource="classpath*:common/spring/spring-*.xml"/>
+    <import resource="classpath*:service/spring/spring-*.xml"/>
+    <import resource="classpath*:web/spring/spring-*.xml"/>
 </beans>

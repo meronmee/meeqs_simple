@@ -5,35 +5,34 @@ import java.util.Map;
 
 import com.meronmee.core.api.domain.Model;
 import com.meronmee.core.api.domain.Pager;
- 
+
 
 /**
  * MyBatis常用公共数据操作服务类<p>
- * 
+ *
  * 提供两大类的接口：
  * 		<li>面向 Model 对象的增删改查</li>
  *  	<li>引用 SQL 语句的增删改查</li>
- *  
+ *
  * <h3>一、面向 Model 对象的增删改查</h3>
- * {@literal 此类接口的方法名称都有Model，第一个参数都是Class<T> modelClass}<p>
- * 
+ *
  * 使用此类接口的前提是：<p>
  * <li>实体必须继承com.meronmee.core.api.domain.Model</li>
  * <li>实体必须含有数据库表名称注解<code>@Table("表名称")</code></li>
  * <li>实体属性名和对应的表字段名建议保持一致，否则须添加表字段名注解<code>@Column("列名称")</code></li>
  * <li>数据库表中必须含有id,createTime,updateTime,deleteStatus等几个字段</li>
  * <li>需要注意MySQL字段类型和Java字段类型转换问题，如tinyint(1)-Boolean, tinyint(2)-Integer，可以在实体中增加对应字段相关兼容类型的Setter</li>
- * 
- * 
+ *
+ *
  * <h3>二、引用 SQL 语句的增删改查</h3>
- * {@literal 此类接口的方法名称都比较简短，第一个参数都是String key}<p>
- * 
+ * {@literal 此类接口的方法名称中都包含UseSql，第一个参数都是String key}<p>
+ *
  * 此类接口直接使用Mapper中的SQL语句，功能强大，可以做任何SQL增删改查
- * 
+ *
  * @author Meron
  *
  */
-public interface DateService {
+public interface DataService {
 
 	/*----------------------------------------*
 	 * 		1、面向 Model 对象的增删改查		  *
@@ -44,7 +43,7 @@ public interface DateService {
      * @param modelId 实体ID
 	 * @return Model类型实体
 	 */
-	public <T extends Model> T retrieveModel(Class<T> modelClass, Long modelId);
+	public <T extends Model> T retrieve(Class<T> modelClass, Long modelId);
 	
 	
 	/**
@@ -54,7 +53,7 @@ public interface DateService {
 	 * @param propertyValue 参数值, 如果是List类型，则会使用IN查询
 	 * @return Model类型实体列表
 	 */
-	public <T extends Model> List<T> findModelByProperty(Class<T> modelClass, String propertyName, Object propertyValue);
+	public <T extends Model> List<T> findByProperty(Class<T> modelClass, String propertyName, Object propertyValue);
 
 		
 	/**
@@ -64,7 +63,7 @@ public interface DateService {
 	 * @param propertyValue 参数值
 	 * @return Model类型实体
 	 */
-	public <T extends Model> T findOneModelByProperty(Class<T> modelClass, String propertyName, Object propertyValue);
+	public <T extends Model> T findOneByProperty(Class<T> modelClass, String propertyName, Object propertyValue);
 
 	/**
 	 * 根据一组属性不分页查询实体Map列表
@@ -72,7 +71,7 @@ public interface DateService {
 	 * @param params 参数键值对, 多个参数之间是 AND 关系。为null或为空查询全部
    	 * @return Model类型实体列表
    	 */
-	public <T extends Model> List<T> findModelByProps(Class<T> modelClass, Map<String, Object> params);
+	public <T extends Model> List<T> findByProps(Class<T> modelClass, Map<String, Object> params);
 	
 	
 	/**
@@ -81,7 +80,7 @@ public interface DateService {
 	 * @param params 参数键值对, 多个参数之间是 AND 关系。为null或为空查询全部
    	 * @return Model类型实体列表
    	 */
-	public <T extends Model> T findOneModelByProps(Class<T> modelClass, Map<String, Object> params);
+	public <T extends Model> T findOneByProps(Class<T> modelClass, Map<String, Object> params);
 	
 	/**
 	 * 新增一条实体
@@ -89,7 +88,7 @@ public interface DateService {
 	 * @param model 要新增的实体
 	 * @return 新增成功的记录数
 	 */
-	public <T extends Model> int createModel(T model);
+	public <T extends Model> int create(T model);
 			
 	
 	/**
@@ -98,7 +97,7 @@ public interface DateService {
 	 * @param model 要更新的实体
 	 * @return 更新成功的记录数
 	 */
-	public <T extends Model> int updateModel(T model);
+	public <T extends Model> int update(T model);
 	
 
     /**
@@ -114,14 +113,14 @@ public interface DateService {
 	 * @param model 要删除的实体
 	 * @return 删除成功的记录数
 	 */
-	public <T extends Model> int deleteModel(T model);
+	public <T extends Model> int delete(T model);
 	/**
 	 * 根据ID逻辑删除实体
 	 * @param modelClass 实体类
 	 * @param modelId 要删除的实体ID
 	 * @return 删除成功的记录数
 	 */
-	public <T extends Model> int deleteModelById(Class<T> modelClass, Long modelId);
+	public <T extends Model> int deleteById(Class<T> modelClass, Long modelId);
 	
 
 	/**
@@ -130,14 +129,14 @@ public interface DateService {
 	 * @param modelIds 要删除的实体ID列表
 	 * @return 删除成功的记录数
 	 */
-	public <T extends Model> int deleteModelByIds(Class<T> modelClass, List<Long> modelIds);
+	public <T extends Model> int deleteByIds(Class<T> modelClass, List<Long> modelIds);
 	
 	/**
 	 * 物理删除实体
 	 * @param model 要删除的实体
 	 * @return 删除成功的记录数
 	 */
-	public <T extends Model> int deleteModelPhysically(T model);
+	public <T extends Model> int deletePhysically(T model);
 
 	/**
 	 * 根据ID物理删除实体
@@ -145,7 +144,7 @@ public interface DateService {
 	 * @param modelId 要删除的实体ID
 	 * @return 删除成功的记录数
 	 */
-	public <T extends Model> int deleteModelPhysicallyById(Class<T> modelClass, Long modelId);
+	public <T extends Model> int deletePhysicallyById(Class<T> modelClass, Long modelId);
 
 	/**
 	 * 根据ID物理删除实体
@@ -153,7 +152,7 @@ public interface DateService {
 	 * @param modelIds 要删除的实体ID列表
 	 * @return 删除成功的记录数
 	 */
-	public <T extends Model> int deleteModelPhysicallyByIds(Class<T> modelClass, List<Long> modelIds);
+	public <T extends Model> int deletePhysicallyByIds(Class<T> modelClass, List<Long> modelIds);
 	
 	
 
@@ -168,7 +167,7 @@ public interface DateService {
 	 * @param params 参数
 	 * @return
 	 */
-	public <T> List<T> find(String key, Object params);
+	public <T> List<T> findUseSql(String key, Object params);
 	
 	/**
 	 * 查询一条记录
@@ -176,7 +175,7 @@ public interface DateService {
 	 * @param params 参数
 	 * @return
 	 */
-	public <T> T findOne(String key, Object params);
+	public <T> T findOneUseSql(String key, Object params);
 
 	//-------------分页查询---------------------
 	/**
@@ -189,7 +188,7 @@ public interface DateService {
 	 * @param params   	- 参数
 	 * @return
 	 */
-	public <T> Pager<T> query(String countKey, String queryKey, int pageNo, int pageSize, Object params);
+	public <T> Pager<T> queryUseSql(String countKey, String queryKey, int pageNo, int pageSize, Object params);
 	/**
 	 * 
 	 * 分页查询记录(不统计总数)
@@ -199,7 +198,7 @@ public interface DateService {
 	 * @param params   	- 参数
 	 * @return
 	 */
-	public <T> Pager<T> query(String key, int pageNo, int pageSize, Object params);
+	public <T> Pager<T> queryUseSql(String key, int pageNo, int pageSize, Object params);
 
 	//-------------统计---------------------	
 	/**
@@ -208,7 +207,7 @@ public interface DateService {
 	 * @param params 	参数
 	 * @return
 	 */
-	public long count(String key, Object params);
+	public long countUseSql(String key, Object params);
 	
 	
 	//-------------新增---------------------		
@@ -218,7 +217,7 @@ public interface DateService {
 	 * @param params 	参数
 	 * @return 新增成功的数量
 	 */
-	public int create(String key, Object params);
+	public int createUseSql(String key, Object params);
 	
 
 	//-------------更新---------------------		
@@ -228,32 +227,34 @@ public interface DateService {
 	 * @param params 	要更新的实体
 	 * @return 更新成功的数量
 	 */
-	public int update(String key, Object params);
+	public int updateUseSql(String key, Object params);
 	
 	
 	//-------------删除---------------------	
 	/**
 	 * 根据参数删除对象
-	 * @param key
+     * @param key 		SQL语句ID(Mapper中的ID)
 	 * @param params
 	 * @return  删除的对象数量
 	 */
-	public int delete(String key, Object params);
+	public int deleteUseSql(String key, Object params);
 	
 	/**
      * 删除指定的唯一标识符对应的持久化对象
      *
+     * @param key 		SQL语句ID(Mapper中的ID)
      * @param id 指定的唯一标识符
 	 * @return 删除的对象数量
      */
-	public int deleteById(String key, Long id);
+	public int deleteByIdUseSql(String key, Long id);
 
     /**
      * 删除指定的唯一标识符列表对应的持久化对象
      *
+     * @param key 		SQL语句ID(Mapper中的ID)
      * @param ids 指定的唯一标识符数组
 	 * @return 删除的对象数量
      */
-	public int deleteByIds(String key,  List<Long> ids);
+	public int deleteByIdsUseSql(String key,  List<Long> ids);
  
 }

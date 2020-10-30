@@ -6,7 +6,7 @@ import ${basePackage!}.${modelVarName!}.domain.${modelClassName!};
 import ${basePackage!}.core.api.domain.RequestInfo;
 import ${basePackage!}.core.common.util.BaseUtils;
 import ${basePackage!}.core.common.util.ShortCache;
-import ${basePackage!}.core.service.database.DateService;
+import ${basePackage!}.core.service.database.DataService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public class ${modelClassName!}ApiImpl implements ${modelClassName!}Api{
 	@Autowired
 	private ${modelClassName!}Dao ${modelVarName!}Dao;
 	@Autowired
-	private DateService dataService;
+	private DataService dataService;
 
     /**
      * 查询用户

@@ -117,7 +117,7 @@ public class JsonResult implements Serializable {
 		SUCCESS(200),
 		
 		/** 400 - 业务报错 */
-		ERROR(400),
+		BIZ_ERROR(400),
 		
 		/** 401 - 未认证(未登录) */
 		CERT_ERROR(401),

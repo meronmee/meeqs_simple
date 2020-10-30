@@ -1,42 +1,23 @@
 package com.meronmee.core.common.util;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializeFilter;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.net.*;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.alibaba.fastjson.serializer.SerializeFilter;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.alibaba.fastjson.serializer.ValueFilter;
-import com.meronmee.core.web.util.RequestUtils;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
-import org.apache.commons.lang3.StringUtils;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * 常用工具类
@@ -241,6 +222,82 @@ public final class BaseUtils {
 		return (","+str+",").replaceAll(",\\s+", ",").replaceAll("\\s+,", ",").replaceAll(",[^,]*[^0-9,]+[^,]*", "").replaceAll("^,+|,+$", "").replaceAll(",+", ",");
 	}
 
+    /**
+     * 格式化商品名称，去除换行等特殊字符
+     * @param name
+     * @return
+     */
+    public static String formatName(String name){
+        if(StringUtils.isBlank(name)){
+            return "";
+        }
+
+        return clearContent(name.trim())
+                .replaceAll("[\n\r	]", "")
+                .replaceAll("\\s+", " ")
+                .replaceAll("\\\\", "＼")
+                .replaceAll("'", "＇")
+                .replace('/', '／')
+                .replace('~', '～')
+                .replace('`', '｀')
+                .replace('!', '！')
+                .replace('@', '＠')
+                .replace('#', '＃')
+                .replace('$', '＄')
+                .replace('%', '％')
+                .replace('^', '＾')
+                .replace('&', '＆')
+                .replace('*', '＊')
+                .replace('(', '（')
+                .replace(')', '）')
+                .replace('+', '＋')
+                .replace('}', '｝')
+                .replace('{', '｛')
+                .replace('[', '［')
+                .replace(']', '］')
+                .replace('|', '｜')
+                .replace(':', '：')
+                .replace(';', '；')
+                .replace('"', '＂')
+                .replace('<', '＜')
+                .replace('>', '＞')
+                .replace(',', '，')
+                .replace('?', '？')
+                ;
+    }
+
+    public static String clearContent(String inputString) {
+        String htmlStr = inputString;
+        String textStr = "";
+        try {
+            String regEx_script = "<[//s]*?script[^>]*?>[//s//S]*?<[//s]*?///[//s]*?script[//s]*?>";
+            String regEx_style = "<[//s]*?style[^>]*?>[//s//S]*?<[//s]*?///[//s]*?style[//s]*?>";
+            String regEx_html = "<[^>]+>";
+            String regEx_html1 = "<[^>]+";
+            Pattern p_script = Pattern.compile(regEx_script, 2);
+            Matcher m_script = p_script.matcher(htmlStr);
+            htmlStr = m_script.replaceAll("");
+
+            Pattern p_style = Pattern.compile(regEx_style, 2);
+            Matcher m_style = p_style.matcher(htmlStr);
+            htmlStr = m_style.replaceAll("");
+
+            Pattern p_html = Pattern.compile(regEx_html, 2);
+            Matcher m_html = p_html.matcher(htmlStr);
+            htmlStr = m_html.replaceAll("");
+
+            Pattern p_html1 = Pattern.compile(regEx_html1, 2);
+            Matcher m_html1 = p_html1.matcher(htmlStr);
+            htmlStr = m_html1.replaceAll("");
+
+            htmlStr = BaseUtils.trans4bytesChar(htmlStr, "");
+
+            textStr = htmlStr;
+        } catch (Exception e) {
+            System.err.println("Html2Text: " + e.getMessage());
+        }
+        return textStr;
+    }
 	/**
 	 * 格式化逗号拼接的列表，去除多余的无效的逗号
 	 * @param list
@@ -912,7 +969,7 @@ public final class BaseUtils {
 		}
 		
 		try {
-			byte[] bytes = str.getBytes("UTF-8");
+			byte[] bytes = str.getBytes(UTF8);
 			for (int i=0; i<bytes.length; i++)  {  
 				if((bytes[i] & 0xF8) == 0xF0){//四字节长度的字符
 					for(int j=0; j<4; j++) {                          
@@ -921,7 +978,7 @@ public final class BaseUtils {
 					i += 3;  
 				}
 			} 
-			String newStr = new String(bytes, "UTF-8");
+			String newStr = new String(bytes, UTF8);
 			return newStr.replaceAll("````", replacement);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -1548,9 +1605,9 @@ public final class BaseUtils {
 			} else {			
 				if(isBlank(format)){
 					DateFormat[] acceptDateFormats = {
-							new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z"),
-							new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"),	
-							new SimpleDateFormat("yyyy-MM-dd"),		 
+							new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"),
+                            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z"),
+                            new SimpleDateFormat("yyyy-MM-dd"),
 							new SimpleDateFormat("yyyy年MM月dd日"),       
 							new SimpleDateFormat("yyyy-M-d HH:m:s"),
 							new SimpleDateFormat("yyyy-MM-dd HH:mm"),
@@ -1751,7 +1808,7 @@ public final class BaseUtils {
 	 * @return
 	 */
 	public static String format(String template, Object... values){
-		return parseTemplate(template, values);
+		return template(template, values);
 	}
 	/**
 	 * 条件表达式
@@ -1774,24 +1831,32 @@ public final class BaseUtils {
 		}
 		return flag ? trueResult : falseResult;
 	}
-	/**
-	 * <pre>
-	 * 替换字符串模板中的变量,变量格式{n}, n为变量序号,从0开始
-	 * 如：xxxx{0}yyy{1}zzz,
-	 * </pre>
-	 * @param template - 字符串模板
-	 * @param values - 替换后的值列表
-	 * @return
-	 */
-	public static String parseTemplate(String template, Object... values){
-		String result = template;
-		
-		for(int i=0; i<values.length; i++){
-			result = result.replaceAll("\\{"+i+"\\}", String.valueOf(values[i]));
-		}
-		
-		return result;
-	}
+
+    /**
+     * <pre>
+     * 按顺序替换字符串模板中的占位符,占位符使用{}
+     * 如：xxxx{}yyy{}zzz,
+     * </pre>
+     * @param template - 字符串模板
+     * @param values - 替换后的值顺序列表
+     * @return
+     */
+    public static String template(String template, Object... values){
+        if(StringUtils.isBlank(template)){
+            return "";
+        }
+        String format = template.replaceAll("\\{\\s*\\d*\\s*\\}", "%s");
+
+        int count = StringUtils.countMatches(format, "%s");
+        if(count > values.length){
+            int missing = count - values.length;
+            Object[] newValues = Arrays.copyOf(values, count);
+            Arrays.fill(newValues, values.length, count, "");
+            return String.format(format, newValues);
+        } else {
+            return String.format(format, values);
+        }
+    }
 	
 	/** 
 	  * 替换一个字符串中的某些指定字符 
@@ -1829,7 +1894,7 @@ public final class BaseUtils {
 			if(StringUtils.isBlank(str)){
 				return "";
 			}
-			return URLEncoder.encode(str, "UTF-8");
+			return URLEncoder.encode(str, UTF8);
 		} catch (UnsupportedEncodingException e) {
 		}
 		return str;
@@ -1839,7 +1904,7 @@ public final class BaseUtils {
 			if(StringUtils.isBlank(str)){
 				return "";
 			}
-			return URLDecoder.decode(str, "UTF-8");
+			return URLDecoder.decode(str, UTF8);
 		} catch (UnsupportedEncodingException e) {
 		}
 		return str;
@@ -2373,16 +2438,44 @@ public final class BaseUtils {
 	public static Map<String, Object> removeMapKeys(Map<String, Object> map, String keys){
 		return deleteMapKeys(map, keys);
 	}
-	
-	/**
-	 * 合并为一个URL地址
-	 * @param parts
-	 * @return
-	 */
-	public static String mergeUrl(String...parts){
-		String url = StringUtils.join(parts, "/");	
-		return url.replaceAll("://", ":##").replaceAll("/+", "/").replaceAll(":##", "://");
-	}
+
+    /**
+     * 合并多段为一个URL地址。 从后往前合并，如果合并完后面的部分出现完整的url，则前面的部分丢弃
+     * @param parts
+     *
+     */
+    public static String mergeUrl(String...parts){
+        int length = parts.length;
+        StringBuilder urlSb = new StringBuilder();
+        for(int i=length-1; i>=0; i--){
+            String part = parts[i];
+
+            if(urlSb.length() > 0){
+                urlSb.insert(0, "/");
+            }
+            urlSb.insert(0, part);
+            if(part.matches("^http(s?)://.+$")){
+                break;
+            }
+        }
+
+        String url = urlSb.toString()
+                .replaceAll("///","/")
+                .replaceAll("\\/\\?","?")
+                .replaceAll("://", ":##")
+                .replaceAll("/+", "/")
+                .replaceAll(":##", "://");
+
+        return url;
+    }
+
+    /** 合并URL */
+    public static String mergeUrlOld(String...parts){
+        String url = StringUtils.join(parts, "/");
+        //return url.replaceAll("/+", "/");
+        url = url.replaceAll("///","/").replaceAll("\\/\\?","?");
+        return url.replaceAll("://", ":##").replaceAll("/+", "/").replaceAll(":##", "://");
+    }
 	
 	/**
 	 * 合并为一个文件路径
@@ -2858,6 +2951,25 @@ public final class BaseUtils {
     		return new JSONObject();
     	}    	
     }
+    public static JSONArray toJsonArray(Object obj){
+        if(obj == null){
+            return new JSONArray();
+        }
+        if(obj instanceof JSONArray){
+            return (JSONArray)obj;
+        }
+
+        try{
+            JSONArray json = JSON.parseArray(obj.toString());
+            if(json == null){
+                return new JSONArray();
+            } else {
+                return json;
+            }
+        }catch(Exception e){
+            return new JSONArray();
+        }
+    }
 	/**
 	 * 四舍五入
 	 * @param value
@@ -3036,7 +3148,7 @@ public final class BaseUtils {
      * @return
      */
     public static String success(Object data){
-        return success("", data);
+        return success("ok", data);
     }
     /**
      *
@@ -3052,7 +3164,7 @@ public final class BaseUtils {
      * @return
      */
     public static String success(){
-        return success("");
+        return success("ok");
     }
     /**
      *
@@ -3061,7 +3173,7 @@ public final class BaseUtils {
      * @return
      */
     public static String success(Object data, final SerializeFilter filter){
-        return success("", data, filter);
+        return success("ok", data, filter);
     }
     /**
      * 快速返回只有一个键/值对的数据

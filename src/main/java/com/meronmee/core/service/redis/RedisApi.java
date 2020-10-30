@@ -1,4 +1,4 @@
-package com.meronmee.core.common.redis;
+package com.meronmee.core.service.redis;
 
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.Cursor;
@@ -23,7 +23,7 @@ import java.util.Set;
  * @author Meron 
  *
  */
-public interface RedisService {
+public interface RedisApi {
 	/**
 	RedisTemplate和StringRedisTemplate的区别：
 	1. StringRedisTemplate继承RedisTemplate。

@@ -9,8 +9,8 @@ import com.meronmee.base.domain.User;
 
 /**
  * 用户Dao<p>
- * 类路径需要和src/main/resources/mapper/UserMapper.xml中的namespace一致<p>
- * 方法和参数要和UserMapper.xml中的ID参数一致
+ * 类路径需要和src/main/resources/mapper/UserDao.xml中的namespace一致<p>
+ * 方法和参数要和UserDao.xml中的ID参数一致
  * @author Meron
  *
  */

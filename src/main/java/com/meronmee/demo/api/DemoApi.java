@@ -52,5 +52,5 @@ public interface DemoApi {
      */
     public void bathBindUserRole(@Param("userId") Long userId, @Param("roleIds") List<Long> roleIds);
 
-
+    public void truncateTemp();
 }

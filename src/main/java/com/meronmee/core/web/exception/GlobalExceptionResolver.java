@@ -45,10 +45,10 @@ public class GlobalExceptionResolver implements HandlerExceptionResolver {
 				result = new AuthError();
 			} else {
 				result = new JsonResult().setMsg("操作失败").setCode(Code.EXCEPTION);
-				log.error(BaseUtils.join("操作失败, URL:", url, ", Params:", RequestUtils.getQueryParams(request),", 异常信息:", e.getMessage()), e);
 			}
-			
-			ResponseUtils.renderJson(response, request, result.toJson());	
+            log.error(BaseUtils.join("操作失败, URL:", url, ", Params:", RequestUtils.getQueryParams(request),", 异常信息:", e.getMessage()), e);
+
+            ResponseUtils.renderJson(response, request, result.toJson());
 			
 			//打印response日志
 			InterceptorHelper.printResponseLog(request, response);
@@ -78,9 +78,9 @@ public class GlobalExceptionResolver implements HandlerExceptionResolver {
 				} else {
 					errorView.addObject("errMsg", "操作失败，" + e.getMessage());					
 				}
-				log.error(BaseUtils.join("操作失败, URL:", url, ", Params:", request.getParameterMap(),", 异常信息:", e.getMessage()), e);	
 			}
-			
+            log.error(BaseUtils.join("操作失败, URL:", url, ", Params:", request.getParameterMap(),", 异常信息:", e.getMessage()), e);
+
 			return errorView;
 		}		
 	}	

@@ -1,4 +1,4 @@
-package com.meronmee.core.common.redis;
+package com.meronmee.core.service.redis.impl;
 
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.SerializationException;

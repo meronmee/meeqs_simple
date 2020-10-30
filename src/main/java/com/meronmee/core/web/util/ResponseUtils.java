@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.meronmee.core.web.interceptor.InterceptorHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,7 +141,10 @@ public final class ResponseUtils {
 		response.setHeader("Pragma", "No-cache");
 		response.setHeader("Cache-Control", "no-cache");
 		response.setDateHeader("Expires", 0);
-				
+
+        //打印response日志
+        InterceptorHelper.printResponseLog(request, response);
+
 		try {
 			PrintWriter writer = response.getWriter();
 			writer.write(text);						
@@ -150,5 +154,20 @@ public final class ResponseUtils {
 			log.error(e.getMessage(), e);
 		}
 	}
+
+    /**
+     * 支持跨域请求
+     * @author Meron
+     * @date 2020-02-04 17:00
+     * @param response
+     * @return void
+     */
+    public static void suppportCrossDomain(HttpServletResponse response){
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+        response.setHeader("Access-Control-Allow-Credentials","true");
+    }
 	
 }

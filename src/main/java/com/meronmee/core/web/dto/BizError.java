@@ -11,7 +11,7 @@ public class BizError extends JsonResult{
 	 *  {"code":400, "msg":"操作失败", "data":... }
 	 */
 	public BizError(){
-		this.setCode(JsonResult.Code.ERROR).setMsg("Failure");
+		this.setCode(JsonResult.Code.BIZ_ERROR).setMsg("Failure");
 	}
 	
 	/**
@@ -19,7 +19,7 @@ public class BizError extends JsonResult{
 	 * @param data 主体数据
 	 */
     public BizError(String msg, Object data) {
-    	super(JsonResult.Code.ERROR, msg, data);
+    	super(JsonResult.Code.BIZ_ERROR, msg, data);
     }
     
     /**

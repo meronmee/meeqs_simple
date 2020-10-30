@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:p="http://www.springframework.org/schema/p"
+	   xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+
+	   xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://shardingsphere.apache.org/schema/shardingsphere/masterslave
+		http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+">
+
+    <!-- 调度器 -->
+    <bean name="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <!-- 通过applicationContextSchedulerContextKey属性配置spring上下文 -->
+        <property name="applicationContextSchedulerContextKey">
+            <value>applicationContext</value>
+        </property>
+    </bean>
+
+    <!--加载数据库任务-->
+    <bean id="loadTask" class="com.meronmee.core.service.task.LoadTask" init-method="loadTask" />
+
+
+</beans>

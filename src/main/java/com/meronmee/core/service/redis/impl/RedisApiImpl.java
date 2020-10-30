@@ -1,5 +1,6 @@
-package com.meronmee.core.common.redis;
+package com.meronmee.core.service.redis.impl;
 
+import com.meronmee.core.service.redis.RedisApi;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -26,8 +27,8 @@ import java.util.concurrent.TimeUnit;
  * @author Meron 
  *
  */
-@Service("redisService")
-public class RedisServiceImpl implements  RedisService{
+@Service
+public class RedisApiImpl implements RedisApi {
 	/**
 	RedisTemplate和StringRedisTemplate的区别：
 	1. StringRedisTemplate继承RedisTemplate。

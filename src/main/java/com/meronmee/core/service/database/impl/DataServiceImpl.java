@@ -10,7 +10,7 @@ import com.meronmee.core.common.util.BaseUtils;
 import com.meronmee.core.common.util.ModelUtils;
 import com.meronmee.core.common.util.ReflectionUtils;
 import com.meronmee.core.service.database.CommonDao;
-import com.meronmee.core.service.database.DateService;
+import com.meronmee.core.service.database.DataService;
 import com.meronmee.core.service.database.constant.DbConst;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -34,7 +34,6 @@ import java.util.Map.Entry;
  *  	<li>引用 SQL 语句的增删改查</li>
  *  
  * <h3>一、面向 Model 对象的增删改查</h3>
- * {@literal 此类接口的方法名称都有Map或Model，第一个参数都是Class<T> modelClass}<p>
  * 
  * 使用此类接口的前提是：<p>
  * <li>实体必须继承com.meronmee.core.api.domain.Model</li>
@@ -45,7 +44,7 @@ import java.util.Map.Entry;
  * 
  * 
  * <h3>二、引用 SQL 语句的增删改查</h3>
- * {@literal 此类接口的方法名称都比较简短，第一个参数都是String key}<p>
+ * {@literal 此类接口的方法名称中都包含UseSql，第一个参数都是String key}<p>
  * 
  * 此类接口直接使用Mapper中的SQL语句，功能强大，可以做任何SQL增删改查
  * 
@@ -53,7 +52,7 @@ import java.util.Map.Entry;
  *
  */
 @Service
-public class DateServiceImpl implements DateService {
+public class DataServiceImpl implements DataService {
     public final Logger log = LoggerFactory.getLogger(this.getClass());
     
 	@Autowired
@@ -93,7 +92,7 @@ public class DateServiceImpl implements DateService {
 	 */
     @Override
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
-	public <T extends Model> T retrieveModel(Class<T> modelClass, Long modelId) {	
+	public <T extends Model> T retrieve(Class<T> modelClass, Long modelId) {
 		if(modelClass == null || BaseUtils.isNull0(modelId)){
 			return null;
 		}
@@ -145,7 +144,7 @@ public class DateServiceImpl implements DateService {
 	 */
     @Override
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
-	public <T extends Model> List<T> findModelByProperty(Class<T> modelClass, String propertyName, Object propertyValue){
+	public <T extends Model> List<T> findByProperty(Class<T> modelClass, String propertyName, Object propertyValue){
 		if(modelClass == null || StringUtils.isBlank(propertyName) || propertyValue==null){
 			return new ArrayList<>();
 		}
@@ -191,7 +190,7 @@ public class DateServiceImpl implements DateService {
 	 */
     @Override
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
-	public <T extends Model> T findOneModelByProperty(Class<T> modelClass, String propertyName, Object propertyValue){
+	public <T extends Model> T findOneByProperty(Class<T> modelClass, String propertyName, Object propertyValue){
 		if(modelClass == null || StringUtils.isBlank(propertyName) || propertyValue==null){
 			return null;
 		}
@@ -246,7 +245,7 @@ public class DateServiceImpl implements DateService {
    	 */
     @Override
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
-	public <T extends Model> List<T> findModelByProps(Class<T> modelClass, Map<String, Object> params){
+	public <T extends Model> List<T> findByProps(Class<T> modelClass, Map<String, Object> params){
     	if(modelClass==null){
 			return new ArrayList<>();
 		}
@@ -300,7 +299,7 @@ public class DateServiceImpl implements DateService {
    	 */
     @Override
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
-	public <T extends Model> T findOneModelByProps(Class<T> modelClass, Map<String, Object> params){
+	public <T extends Model> T findOneByProps(Class<T> modelClass, Map<String, Object> params){
     	if(modelClass==null){
 			return null;
 		}
@@ -319,7 +318,7 @@ public class DateServiceImpl implements DateService {
 	 */
     @Override
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
-	public <T extends Model> int createModel(T model){
+	public <T extends Model> int create(T model){
 		if(model==null){
 			return 0;
 		}
@@ -365,7 +364,7 @@ public class DateServiceImpl implements DateService {
 	 */
     @Override
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
-	public <T extends Model> int updateModel(T model){
+	public <T extends Model> int update(T model){
 		if(model==null ||BaseUtils.isNull0(model.getId())){
 			return 0;
 		} 
@@ -460,7 +459,7 @@ public class DateServiceImpl implements DateService {
 	 */
     @Override
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
-	public <T extends Model> int deleteModel(T model){
+	public <T extends Model> int delete(T model){
 		if(model==null ||BaseUtils.isNull0(model.getId())){
 			return 0;
 		}
@@ -484,7 +483,7 @@ public class DateServiceImpl implements DateService {
 	 */
     @Override
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
-	public <T extends Model> int deleteModelById(Class<T> modelClass, Long modelId){
+	public <T extends Model> int deleteById(Class<T> modelClass, Long modelId){
 		if(modelClass == null || BaseUtils.isNull0(modelId)){
 			return 0;
 		}
@@ -505,7 +504,7 @@ public class DateServiceImpl implements DateService {
 	 */
     @Override
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
-	public <T extends Model> int deleteModelByIds(Class<T> modelClass, List<Long> modelIds){
+	public <T extends Model> int deleteByIds(Class<T> modelClass, List<Long> modelIds){
 		if(modelClass == null || modelIds==null || modelIds.isEmpty()){
 			return 0;
 		}
@@ -524,7 +523,7 @@ public class DateServiceImpl implements DateService {
 	 */
     @Override
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
-	public <T extends Model> int deleteModelPhysically(T model){
+	public <T extends Model> int deletePhysically(T model){
 		if(model==null ||BaseUtils.isNull0(model.getId())){
 			return 0;
 		}
@@ -546,7 +545,7 @@ public class DateServiceImpl implements DateService {
 	 */
     @Override
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
-	public <T extends Model> int deleteModelPhysicallyById(Class<T> modelClass, Long modelId){
+	public <T extends Model> int deletePhysicallyById(Class<T> modelClass, Long modelId){
 		if(modelClass == null || BaseUtils.isNull0(modelId)){
 			return 0;
 		}
@@ -566,7 +565,7 @@ public class DateServiceImpl implements DateService {
 	 */
     @Override
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
-	public <T extends Model> int deleteModelPhysicallyByIds(Class<T> modelClass, List<Long> modelIds){
+	public <T extends Model> int deletePhysicallyByIds(Class<T> modelClass, List<Long> modelIds){
 		if(modelClass == null || modelIds==null || modelIds.isEmpty()){
 			return 0;
 		}
@@ -592,7 +591,7 @@ public class DateServiceImpl implements DateService {
 	 * @return
 	 */
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
-	public <T> List<T> find(String key, Object params){
+	public <T> List<T> findUseSql(String key, Object params){
 		return commonDao.find(key, params);
 	}
 	
@@ -603,7 +602,7 @@ public class DateServiceImpl implements DateService {
 	 * @return
 	 */
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
-	public <T> T findOne(String key, Object params){
+	public <T> T findOneUseSql(String key, Object params){
 		return commonDao.findOne(key, params);
 	}
 
@@ -619,7 +618,7 @@ public class DateServiceImpl implements DateService {
 	 * @return
 	 */
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
-	public <T> Pager<T> query(String countKey, String queryKey, int pageNo, int pageSize, Object params){
+	public <T> Pager<T> queryUseSql(String countKey, String queryKey, int pageNo, int pageSize, Object params){
 		return commonDao.query(countKey, queryKey, pageNo, pageSize, params);
 	}
 	/**
@@ -632,7 +631,7 @@ public class DateServiceImpl implements DateService {
 	 * @return
 	 */
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
-	public <T> Pager<T> query(String key, int pageNo, int pageSize, Object params){
+	public <T> Pager<T> queryUseSql(String key, int pageNo, int pageSize, Object params){
 		return commonDao.query(key, pageNo, pageSize, params);
 	}
 
@@ -644,7 +643,7 @@ public class DateServiceImpl implements DateService {
 	 * @return
 	 */
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.SUPPORTS, readOnly=true)
-	public long count(String key, Object params){
+	public long countUseSql(String key, Object params){
 		return commonDao.count(key, params);
 	}
 	
@@ -657,7 +656,7 @@ public class DateServiceImpl implements DateService {
 	 * @return 新增成功的数量
 	 */
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
-	public int create(String key, Object params){
+	public int createUseSql(String key, Object params){
 		return commonDao.create(key, params);
 	}
 	
@@ -670,7 +669,7 @@ public class DateServiceImpl implements DateService {
 	 * @return 更新成功的数量
 	 */
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
-	public int update(String key, Object params){
+	public int updateUseSql(String key, Object params){
 		return commonDao.update(key, params);
 	}
 	
@@ -678,59 +677,50 @@ public class DateServiceImpl implements DateService {
 	//-------------删除---------------------	
 	/**
 	 * 根据参数删除对象
-	 * @param key
+     * @param key SQL语句ID(Mapper中的ID)
 	 * @param params
 	 * @return  删除的对象数量
 	 */
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
-	public int delete(String key, Object params){
+	public int deleteUseSql(String key, Object params){
 		return commonDao.delete(key, params);
 	}
 	
 	/**
      * 删除指定的唯一标识符对应的持久化对象
      *
+     * @param key SQL语句ID(Mapper中的ID)
      * @param id 指定的唯一标识符
 	 * @return 删除的对象数量
      */
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
-	public int deleteById(String key, Long id){
+	public int deleteByIdUseSql(String key, Long id){
 		return commonDao.deleteById(key, id);
 	}
 
     /**
      * 删除指定的唯一标识符列表对应的持久化对象
      *
+     * @param key SQL语句ID(Mapper中的ID)
      * @param ids 指定的唯一标识符数组
 	 * @return 删除的对象数量
      */
 	@Transactional(value=DbConst.MYBATIS_TRANSACTION_MANAGER, propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
-	public int deleteByIds(String key,  List<Long> ids){
+	public int deleteByIdsUseSql(String key,  List<Long> ids){
 		return commonDao.deleteByIds(key, ids);
 	}
 
-	//-------------存储过程---------------------	
-	/**
-	 * 执行一条MySQL存储过程
-	 * @param key SQL语句ID(Mapper中的ID)
-	 * @param params 参数
-	 * @return
-	 */
-	public <T> T runProc(String key, Object params){
-		return commonDao.findOne(key, params);
-	}
-	/**
-	 * 获取安全的数据库表名，字段名，避免名称命中数据库保留字
-	 * @param columnName
-	 * @return
-	 */
-	private String getSafeColName(String columnName){
-		return "`"+columnName.replaceAll("`","")+"`";
-	}
-	
 	//---------------相关辅助方法-----------------
-	
-	/**
+    /**
+     * 获取安全的数据库表名，字段名，避免名称命中数据库保留字
+     * @param columnName
+     * @return
+     */
+    private String getSafeColName(String columnName){
+        return "`"+columnName.replaceAll("`","")+"`";
+    }
+
+    /**
      * 获取实体对应的数据库表名称
      * @param modelClass
      * @return
@@ -800,7 +790,7 @@ public class DateServiceImpl implements DateService {
             	continue;
             }
             
-            String filedName = field.getName(); 
+            String filedName = this.getSafeColName(field.getName());
             String columnName = this.getColumnName(modelClass, field);
             
             sb.append(",").append(columnName).append(" AS ").append(filedName);            

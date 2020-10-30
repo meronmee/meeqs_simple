@@ -1,9 +1,13 @@
 package com.meronmee.demo.controller;
 
+import com.meronmee.base.api.ConfigApi;
 import com.meronmee.base.api.UserApi;
 import com.meronmee.base.domain.User;
-import com.meronmee.core.common.redis.RedisService;
+import com.meronmee.core.common.batch.BatchBuilder;
+import com.meronmee.core.common.batch.BatchPageTask;
+import com.meronmee.core.common.batch.BatchService;
 import com.meronmee.core.common.util.*;
+import com.meronmee.core.service.redis.RedisApi;
 import com.meronmee.core.web.dto.AuthError;
 import com.meronmee.core.web.dto.JsonResult;
 import com.meronmee.core.web.dto.Success;
@@ -21,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -40,11 +45,15 @@ public class TestAction {
 		
     @Resource(name="man")  
     private Human human; 
-    
+
     @Autowired
-    private RedisService redisService;
+    private BatchService batchService;
+    @Autowired
+    private RedisApi redisApi;
     @Autowired
     private UserApi userApi;
+    @Autowired
+    private ConfigApi configApi;
     @Autowired
     private DemoApi demoApi;
      
@@ -81,6 +90,33 @@ public class TestAction {
 
 		return new Success(result); 
     }
+
+    /**
+     * 操控redis
+     */
+    @RequestMapping(value = "/sys/config.json")
+    public JsonResult config(HttpServletRequest request, HttpServletResponse response) {
+        String oper = RequestUtils.getStringParam(request, "oper", "get");
+        String key = RequestUtils.getStringParam(request, "key");
+        String value = RequestUtils.getStringParam(request, "value");
+
+        if("get".equals(oper)){
+            Assert.isNotBlank(key, "key 不能为空");
+            return new Success(new LinkMap("value", this.configApi.get(key)));
+        } else if("set".equals(oper)){
+            Assert.isNotBlank(key, "key 不能为空");
+            Assert.isNotBlank(value, "value 不能为空");
+
+            this.configApi.set(key, value);
+            return new Success(new LinkMap("value", this.configApi.get(key)));
+        } else if("reload".equals(oper)){
+            this.configApi.clearCache();
+            return new Success();
+        }
+
+        return new Success();
+    }
+
     /**
 	 * 操控redis
 	 */
@@ -100,17 +136,17 @@ public class TestAction {
 			User userInfo = user; 
 			//Map<String,Object> userInfo = user.toMap();
 			//String userInfo = JSON.toJSONString(user); 
-			this.redisService.setObj(key, userInfo, 8); 			
-			//this.redisService.set(key, userInfo, 8); 
+			this.redisApi.setObj(key, userInfo, 8); 			
+			//this.redisApi.set(key, userInfo, 8); 
 		} else if("delete".equals(oper)){
 			Assert.isNotBlank(key, "key 不能为空");
-			this.redisService.delete(key); 
+			this.redisApi.delete(key); 
 		} 
 		
-		User user = this.redisService.getObj(key);
-		//Map<String, Object> user = this.redisService.getObj(key);
-		//String user = this.redisService.getObj(key);
-		//String user = this.redisService.get(key);
+		User user = this.redisApi.getObj(key);
+		//Map<String, Object> user = this.redisApi.getObj(key);
+		//String user = this.redisApi.getObj(key);
+		//String user = this.redisApi.get(key);
 		return new Success(new LinkMap("value", user)); 
 	}
 
@@ -132,9 +168,9 @@ public class TestAction {
             //快速失败的锁：如果锁被别人占用，则立即返回失败
             if(oper.equals("lock")) {
                 int expire = RequestUtils.getIntegerParam(request, "expire", 10);
-                result = this.redisService.getLock(key, reqid, expire);
+                result = this.redisApi.getLock(key, reqid, expire);
             } else {
-                result = this.redisService.releaseLock(key, reqid);
+                result = this.redisApi.releaseLock(key, reqid);
             }
 
             if (result) {
@@ -220,7 +256,7 @@ public class TestAction {
 					   for(int j=0; j<num/10; j++){
 						   long score = BaseUtils.randomAB(now, end);
 						   log.info("zAdd - key={}, value={}, score={}", key, score, score);
-						   redisService.zAdd(key, String.valueOf(score), BaseUtils.toDouble(score));
+						   redisApi.zAdd(key, String.valueOf(score), BaseUtils.toDouble(score));
 					   }			 
 				   }					 
 				}).start();
@@ -232,7 +268,7 @@ public class TestAction {
 					   for(int j=0; j<num/10; j++){
 						   double min = BaseUtils.toDouble(now);
 						   double max = BaseUtils.toDouble(end);
-						   log.info("zRange - key={}, min={}, max={}, result:{}", key, min, max, TestAction.toString(redisService.zRangeByScoreWithScores(key, min, max)));
+						   log.info("zRange - key={}, min={}, max={}, result:{}", key, min, max, TestAction.toString(redisApi.zRangeByScoreWithScores(key, min, max)));
 						   ;
 					   }			 
 				   }					 
@@ -247,11 +283,11 @@ public class TestAction {
 						   if(value==0){
 							   long score = BaseUtils.randomAB(now, end);
 							   //log.info("zAdd - key={}, value={}, score={}", key, score, score);
-							   redisService.zAdd(key, String.valueOf(score), BaseUtils.toDouble(score));
+							   redisApi.zAdd(key, String.valueOf(score), BaseUtils.toDouble(score));
 						   } else {
 							   double min = BaseUtils.toDouble(now);
 							   double max = BaseUtils.toDouble(end);
-							   log.info("zRange - key={}, min={}, max={}, result:{}", key, min, max, TestAction.toString(redisService.zRangeByScoreWithScores(key, min, max)));
+							   log.info("zRange - key={}, min={}, max={}, result:{}", key, min, max, TestAction.toString(redisApi.zRangeByScoreWithScores(key, min, max)));
 							   ;
 						   }
 					   }			 
@@ -288,5 +324,54 @@ public class TestAction {
 		
 		return new Success(); 
 	}
-        
+
+
+
+    /**
+     * 操控redis
+     */
+    @RequestMapping(value = "/demo/testTruncate.json")
+    public JsonResult testTruncate(HttpServletRequest request, HttpServletResponse response) {
+        demoApi.truncateTemp();
+        return new Success();
+    }
+
+
+    /**
+     * 测试通用批量任务，通过任务文件来下发任务
+     * @param data 任务文件
+     * @author mizr 2020-08-29
+     */
+    @RequestMapping(value = "/app/test/batch.json")
+    public void testBatch(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            MultipartFile file = RequestUtils.getFileParam(request, "data");
+            Assert.isNotNull(file, "请上传任务数据");
+
+            ResponseUtils.renderJson(response, BaseUtils.success());
+
+            this.batchService.run(new BatchBuilder()
+                    .setAction("测试批量任务")
+                    .setPageSize(10)
+                    .setPoolSize(5)
+                    .setTaskData(file.getInputStream())
+                    .setTask(new BatchPageTask() {//每页的任务处理，只需要new 一个 BatchPageTask 即可，核心逻辑建议在execute中调用一个service方法来处理
+                        @Override
+                        public void execute(List<String> pageData, int pageNo) {
+                            log.info("分页任务数据：" + StringUtils.join(pageData, ","));
+                            //核心逻辑最好放到一个service方法中处理，此处只是演示
+                            for(String line : pageData){
+                                log.info(getUser(BaseUtils.toLong(line)).getNickname());
+                            }
+                        }
+                    })
+            );//run
+
+        } catch (IllegalArgumentException e) {
+            ResponseUtils.renderJson(response, BaseUtils.error(e.getMessage()));
+        } catch (Exception e) {
+            log.error("操作失败, 原因:" + e.getMessage(), e);
+            ResponseUtils.renderJson(response, BaseUtils.error(JsonResult.Code.EXCEPTION.getCode(), "操作失败"));
+        }
+    }
 }

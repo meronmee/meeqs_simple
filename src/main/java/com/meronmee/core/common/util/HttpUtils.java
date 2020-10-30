@@ -1,5 +1,6 @@
 package com.meronmee.core.common.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
@@ -15,20 +16,10 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.Headers;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 /**
  * HTTP/HTTPS 请求工具类<p>
@@ -43,14 +34,35 @@ import okhttp3.ResponseBody;
 public final class HttpUtils {
 	private static final Logger log = LoggerFactory.getLogger(HttpUtils.class);
 	
-	/**连接超时，单位：秒*/
-	private static final int CONNECT_TIMEOUT = 3;
-	/**发送数据超时，单位：秒*/
-	private static final int WRITE_TIMEOUT = 5;
-	/**读取数据超时，单位：秒*/
-	private static final int READ_TIMEOUT = 5;
+	/**不超时header标记位*/
+	public static final String HEADER_NO_TIMEOUT = "_TIMEOUT_DISABLE";
+	/**自定义连接超时header标记位*/
+	public static final String HEADER_CONNECT_TIMEOUT_SECONDS = "_TIMEOUT_CONNECT_TIMEOUT_SECONDS";
+	/**自定义发送数据超时header标记位*/
+	public static final String HEADER_WRITE_TIMEOUT_SECONDS = "_TIMEOUT_WRITE_TIMEOUT_SECONDS";
+	/**自定义读取数据超时header标记位*/
+	public static final String HEADER_READ_TIMEOUT_SECONDS = "_TIMEOUT_READ_TIMEOUT_SECONDS";
+	
+	/**默认连接超时，单位：秒*/
+	private static final int CONNECT_TIMEOUT = 10;
+	/**默认发送数据超时，单位：秒*/
+	private static final int WRITE_TIMEOUT = 10;
+	/**默认读取数据超时，单位：秒*/
+	private static final int READ_TIMEOUT = 15;
 
 	private static final MediaType MEDIATYPE_JSON = MediaType.parse("application/json; charset=utf-8");
+
+	/**
+	 *
+	 OkHttpClients should be shared
+	 OkHttp performs best when you create a single OkHttpClient instance and reuse it for all of your HTTP calls. This is because each client holds its own connection pool and thread pools. Reusing connections and threads reduces latency and saves memory. Conversely, creating a client for each request wastes resources on idle pools.
+	*/
+	// The singleton HTTP client.
+	private static final OkHttpClient sharedClient = new OkHttpClient.Builder()
+					.connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
+					.writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
+		        	.readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+					.build();
 	
 	/**
 	 * 以表单的方式发送POST请求
@@ -65,7 +77,7 @@ public final class HttpUtils {
 	 * 以表单的方式发送POST请求
 	 * @param url		url地址
 	 * @param data		请求数据，可以为空或者null
-	 * @param headers	请求头部，可以为空或者null
+	 * @param headers	请求头部，可以为空或者null。特殊字段：_TIMEOUT_DISABLE,表示该请求是长时耗请求，不设超时时间
 	 * @return
 	 */
 	public static String post(final String url, final Map<String, String> data, final Map<String, String> headers) throws Exception{
@@ -103,7 +115,7 @@ public final class HttpUtils {
 				.post(bodyBuilder.build())
 				.build();
 		
-		Response response = newClient(url)
+		Response response = newClient(url, headerBuilder)
 				.newCall(request)
 				.execute();
 		
@@ -137,7 +149,7 @@ public final class HttpUtils {
 	 * 以表单的方式异步发送POST请求
 	 * @param url		url地址
 	 * @param data		请求数据，可以为空或者null
-	 * @param headers	请求头部，可以为空或者null
+	 * @param headers	请求头部，可以为空或者null。特殊字段：_TIMEOUT_DISABLE,表示该请求是长时耗请求，不设超时时间
 	 * @param callback	回调，不关注返回结果可以为null
 	 * @return
 	 */
@@ -178,7 +190,7 @@ public final class HttpUtils {
 		
 		
 		//发起请求
-		Call call = newClient(url).newCall(request);
+		Call call = newClient(url, headerBuilder).newCall(request);
 		if(callback != null){
 			call.enqueue(callback);
 		} else {
@@ -217,7 +229,18 @@ public final class HttpUtils {
 	 * 以字符串的方式发送POST请求
 	 * @param url		url地址
 	 * @param data		请求数据，可以为空或者null
-	 * @param headers	请求头部，可以为空或者null
+	 * @param headers	请求头部，可以为空或者null。特殊字段：_TIMEOUT_DISABLE,表示该请求是长时耗请求，不设超时时间
+	 * @param contentType	ContentType，默认为:application/json; charset=utf-8
+	 * @return
+	 */
+	public static String postAsString(final String url, final String data, final Map<String, String> headers) throws Exception{
+		return postAsString(url, data, headers, null);
+	}
+	/**
+	 * 以字符串的方式发送POST请求
+	 * @param url		url地址
+	 * @param data		请求数据，可以为空或者null
+	 * @param headers	请求头部，可以为空或者null。特殊字段：_TIMEOUT_DISABLE,表示该请求是长时耗请求，不设超时时间
 	 * @param contentType	ContentType，默认为:application/json; charset=utf-8
 	 * @return
 	 */
@@ -262,7 +285,7 @@ public final class HttpUtils {
 				.post(body)
 				.build();
 		
-		Response response = newClient(url)
+		Response response = newClient(url, headerBuilder)
 				.newCall(request)
 				.execute();
 			
@@ -295,7 +318,7 @@ public final class HttpUtils {
 	 * 以字符串的方式异步发送POST请求
 	 * @param url		url地址
 	 * @param data		请求数据，可以为空或者null
-	 * @param headers	请求头部，可以为空或者null
+	 * @param headers	请求头部，可以为空或者null。特殊字段：_TIMEOUT_DISABLE,表示该请求是长时耗请求，不设超时时间
 	 * @param contentType	ContentType，默认为:application/json; charset=utf-8
 	 * @param callback	回调，不关注返回结果可以为null
 	 * @return
@@ -342,7 +365,7 @@ public final class HttpUtils {
 				.build();
 						
 		//发起请求
-		Call call = newClient(url).newCall(request);
+		Call call = newClient(url, headerBuilder).newCall(request);
 		if(callback != null){
 			call.enqueue(callback);
 		} else {
@@ -381,7 +404,7 @@ public final class HttpUtils {
 	 * 发送GET请求
 	 * @param url		url地址
 	 * @param data		请求数据，可以为空或者null
-	 * @param headers	请求头部，可以为空或者null
+	 * @param headers	请求头部，可以为空或者null。特殊字段：_TIMEOUT_DISABLE,表示该请求是长时耗请求，不设超时时间
 	 * @return
 	 */
 	public static String get(final String url, final Map<String, String> data, final Map<String, String> headers) throws Exception{
@@ -415,7 +438,7 @@ public final class HttpUtils {
 				.build();
 		
 		//发起请求
-		Response response = newClient(url)
+		Response response = newClient(url, headerBuilder)
 				.newCall(request)
 				.execute();
 		
@@ -428,7 +451,7 @@ public final class HttpUtils {
 	 * 发送GET请求
 	 * @param url		url地址
 	 * @param data		请求数据，可以为空或者null
-	 * @param headers	请求头部，可以为空或者null
+	 * @param headers	请求头部，可以为空或者null。特殊字段：_TIMEOUT_DISABLE,表示该请求是长时耗请求，不设超时时间
 	 * @param callback	回调，不关注返回结果可以为null
 	 */
 	public static void getAsync(final String url, final Map<String, String> data, final Map<String, String> headers, final Callback callback) throws Exception{
@@ -462,7 +485,7 @@ public final class HttpUtils {
 		
 		
 		//发起请求
-		Call call = newClient(url).newCall(request);
+		Call call = newClient(url, headerBuilder).newCall(request);
 		if(callback != null){
 			call.enqueue(callback);
 		} else {
@@ -482,24 +505,268 @@ public final class HttpUtils {
 			});			
 		}
 	}
-	
+
 	//-------------------------
+
+    /**
+     * 上传文件
+     * @param url url地址
+     * @param fileFieldName 文件字段名称
+     * @param file 文件数据
+     * @param data 普通数据，可以为空或者null
+     * @return
+     */
+    public static String upload(final String url, final String fileFieldName, final File file, final Map<String, String> data) throws Exception{
+        return upload(url, fileFieldName, file, data, null);
+    }
+    /**
+     * 上传文件
+     * @param url    url地址
+     * @param fileFieldName 文件字段名称
+     * @param file   文件数据
+     * @param data	 普通请求数据，可以为空或者null
+     * @param headers	请求头部，可以为空或者null
+     * @return
+     */
+    public static String upload(final String url, final String fileFieldName, final File file, final Map<String, String> data, final Map<String, String> headers) throws Exception{
+        Assert.isNotBlank(url, "请求地址不能为空");
+
+        String reqId = genReqId();
+        String filePath = file!=null ? file.getAbsolutePath() : "null";
+        log.info("[Upload-{}]URL:{}, fileField:{}, File:{}, Data:{}, Headers:{}", reqId, url, fileFieldName, filePath, data, headers);
+
+        //组装表单数据
+        MultipartBody.Builder bodyBuilder = new MultipartBody.Builder();
+        bodyBuilder.setType(MultipartBody.FORM);
+
+        //文件数据
+        if(file != null && file.exists() && file.isFile()){
+            String fileField = BaseUtils.getFirstNotBlank(fileFieldName, "file");
+            String fileName = BaseUtils.getFileName(filePath);
+
+            //MediaType.parse("application/octet-stream");
+            RequestBody fileBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+            bodyBuilder.addFormDataPart(fileField, fileName, fileBody);
+        } else {
+            log.warn("[Upload-{}]URL:{}, File:{}, invalid file！",  reqId, url, filePath);
+        }
+
+        //普通数据
+        if(BaseUtils.isNotEmpty(data)){
+            for(Entry<String, String> entry : data.entrySet()){
+                if(null == entry.getValue()){
+                    continue;
+                }
+                bodyBuilder.addFormDataPart(entry.getKey(), entry.getValue());
+            }
+        }
+
+        //组装header数据
+        Headers.Builder headerBuilder = new Headers.Builder();
+        if(BaseUtils.isNotEmpty(headers)){
+            for(Entry<String, String> entry : headers.entrySet()){
+                if(null == entry.getValue()){
+                    continue;
+                }
+                headerBuilder.add(entry.getKey(), entry.getValue());
+            }
+        }
+
+        //构建请求
+        Request request = new Request.Builder()
+                .url(url)
+                .headers(headerBuilder.build())
+                .post(bodyBuilder.build())
+                .build();
+
+        Response response = newClient(url, headerBuilder)
+                .newCall(request)
+                .execute();
+
+        String responseBody = getResponseInfo(response);
+        log.info("[Upload-{}]URL:{}, Response:{}", reqId, url, responseBody);
+        return responseBody;
+    }
+
+    //-------------------------
+
+    /**
+     * 异步上传文件
+     * @param url url地址
+     * @param fileFieldName 文件字段名称
+     * @param file 文件数据
+     * @param data 普通数据，可以为空或者null
+     * @return
+     */
+    public static void uploadAsync(final String url, final String fileFieldName, final File file, final Map<String, String> data) throws Exception{
+        uploadAsync(url, fileFieldName, file, data, null, null);
+    }
+    /**
+     * 异步上传文件
+     * @param url url地址
+     * @param fileFieldName 文件字段名称
+     * @param file 文件数据
+     * @param data 普通数据，可以为空或者null
+     * @return
+     */
+    public static void uploadAsync(final String url, final String fileFieldName, final File file, final Map<String, String> data, final Callback callback) throws Exception{
+        uploadAsync(url, fileFieldName, file, data, null, callback);
+    }
+    /**
+     * 异步上传文件
+     * @param url url地址
+     * @param fileFieldName 文件字段名称
+     * @param file 文件数据
+     * @param data 普通数据，可以为空或者null
+     * @param headers	请求头部，可以为空或者null
+     * @param callback	回调，不关注返回结果可以为null
+     * @return
+     */
+    public static void uploadAsync(final String url, final String fileFieldName, final File file, final Map<String, String> data, final Map<String, String> headers, final Callback callback) throws Exception{
+        Assert.isNotBlank(url, "请求地址不能为空");
+
+        String reqId = genReqId();
+        String filePath = file!=null ? file.getAbsolutePath() : "null";
+        log.info("[Upload-Async-{}]URL:{}, fileField:{}, File:{}, Data:{}, Headers:{}", reqId, url, fileFieldName, filePath, data, headers);
+
+        //组装表单数据
+        MultipartBody.Builder bodyBuilder = new MultipartBody.Builder();
+        bodyBuilder.setType(MultipartBody.FORM);
+
+        //文件数据
+        if(file != null && file.exists() && file.isFile()){
+            String fileField = BaseUtils.getFirstNotBlank(fileFieldName, "file");
+            String fileName = BaseUtils.getFileName(filePath);
+
+            //MediaType.parse("application/octet-stream");
+            RequestBody fileBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+            bodyBuilder.addFormDataPart(fileField, fileName, fileBody);
+        } else {
+            log.warn("[Upload-Async-{}]URL:{}, File:{}, invalid file！",  reqId, url, filePath);
+        }
+
+        //普通数据
+        if(BaseUtils.isNotEmpty(data)){
+            for(Entry<String, String> entry : data.entrySet()){
+                if(null == entry.getValue()){
+                    continue;
+                }
+                bodyBuilder.addFormDataPart(entry.getKey(), entry.getValue());
+            }
+        }
+
+        //组装header数据
+        Headers.Builder headerBuilder = new Headers.Builder();
+        if(BaseUtils.isNotEmpty(headers)){
+            for(Entry<String, String> entry : headers.entrySet()){
+                if(null == entry.getValue()){
+                    continue;
+                }
+                headerBuilder.add(entry.getKey(), entry.getValue());
+            }
+        }
+
+        //构建请求
+        Request request = new Request.Builder()
+                .url(url)
+                .headers(headerBuilder.build())
+                .post(bodyBuilder.build())
+                .build();
+
+        //发起请求
+        Call call = newClient(url, headerBuilder).newCall(request);
+        if(callback != null){
+            call.enqueue(callback);
+        } else {
+            call.enqueue(new Callback(){
+
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    log.error(BaseUtils.join("[Upload-Async-", reqId, "]URL:", url, ", ResponseError:", e.getMessage()), e);
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String responseBody = getResponseInfo(response);
+                    log.info("[Upload-Async-{}]URL:{}, Response:{}", reqId, url, responseBody);
+                }
+
+            });
+        }
+    }
+
+    //============================================
 	
 	/**
 	 * 创建一个OkHttpClient客户端
 	 * @param url - 请求地址，用于判断是否是HTTPS请求
 	 */
 	private static OkHttpClient newClient(String url) throws Exception{
+		return newClient(url, null);
+	}
+	/**
+	 * 如果没有个性化的设置，将返回共享的OkHttpClient；如果有个性化的设置，则基于共享的客户端sharedClient创建一个轻量的OkHttpClient客户端
+	 * @param url - 请求地址，用于判断是否是HTTPS请求
+	 * @param headerBuilder - 请求头，用于判断超时
+	 */
+	private static OkHttpClient newClient(String url, Headers.Builder headerBuilder) throws Exception{
 		Assert.isNotBlank(url, "请求地址不能为空");
-		
-		boolean isHttps = url.toLowerCase().startsWith("https:");//是否是HTTPS请求的客户端
-		
-		OkHttpClient.Builder builder = new OkHttpClient.Builder()
-		        .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
-		        .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
-		        .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS);
-		        
-		if(isHttps){
+
+		/*
+		This builds a client that shares the same connection pool, thread pools, and configuration.
+		Use the builder methods to configure the derived client for a specific purpose.
+
+		OkHttpClient.Builder builder = sharedClient.newBuilder();
+		*/
+		OkHttpClient.Builder builder = null;
+
+		//个性化的超时设置
+		if(headerBuilder != null){
+			boolean customTimeOut = false;//是否自定义了超时
+
+			Integer connectTimeout = CONNECT_TIMEOUT;
+			Integer writeTimeout = WRITE_TIMEOUT;
+			Integer readTimeout = READ_TIMEOUT;
+			if(StringUtils.isNotBlank(headerBuilder.get(HEADER_NO_TIMEOUT))) {//不超时
+				customTimeOut = true;
+				connectTimeout = 0;
+				writeTimeout = 0;
+				readTimeout = 0;
+			} else {
+				connectTimeout = BaseUtils.toInteger(headerBuilder.get(HEADER_CONNECT_TIMEOUT_SECONDS));
+				if(connectTimeout == null){
+					connectTimeout = CONNECT_TIMEOUT;
+				} else {
+					customTimeOut = true;
+				}
+				writeTimeout = BaseUtils.toInteger(headerBuilder.get(HEADER_WRITE_TIMEOUT_SECONDS));
+				if(writeTimeout == null){
+					writeTimeout = WRITE_TIMEOUT;
+				} else {
+					customTimeOut = true;
+				}
+				readTimeout = BaseUtils.toInteger(headerBuilder.get(HEADER_READ_TIMEOUT_SECONDS));
+				if(readTimeout == null){
+					readTimeout = READ_TIMEOUT;
+				} else {
+					customTimeOut = true;
+				}
+			}
+			if(customTimeOut) {
+				if (builder == null) {
+					builder = sharedClient.newBuilder();//newBuilder 新建出来的client将复用sharedClient的线程池
+				}
+				builder.connectTimeout(connectTimeout, TimeUnit.SECONDS)
+						.writeTimeout(writeTimeout, TimeUnit.SECONDS)
+						.readTimeout(readTimeout, TimeUnit.SECONDS);
+			}
+		}
+
+		//个性化的HTTPS设置
+		if(url.toLowerCase().startsWith("https:")){//是否是HTTPS请求的客户端
+			if(builder == null){
+				builder = sharedClient.newBuilder();//newBuilder 新建出来的client将复用sharedClient的线程池
+			}
 			//信任全部HTTPS证书
 			builder.sslSocketFactory(createSSLSocketFactory(), new TrustAllCerts())
 		        .hostnameVerifier(new HostnameVerifier() {  
@@ -508,11 +775,13 @@ public final class HttpUtils {
 		                return true;  
 		            }  
 		        });
-		}       
-		        
-		OkHttpClient client = builder.build();
-		
-		return client;				
+		}
+
+		if(builder == null){//没有个性化的配置
+			return sharedClient;
+		} else { //有个性化的设置
+			return builder.build();
+		}
 	}
 	
 	/**

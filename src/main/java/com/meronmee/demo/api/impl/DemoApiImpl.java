@@ -1,11 +1,11 @@
-package com.meronmee.demo.service.impl;
+package com.meronmee.demo.api.impl;
 
 import com.meronmee.base.api.UserApi;
 import com.meronmee.base.domain.User;
 import com.meronmee.core.api.domain.Pager;
 import com.meronmee.core.api.domain.RequestInfo;
 import com.meronmee.core.common.util.BaseUtils;
-import com.meronmee.core.service.database.DateService;
+import com.meronmee.core.service.database.DataService;
 import com.meronmee.demo.api.DemoApi;
 import com.meronmee.demo.constant.DemoSqlKeyConst;
 import com.meronmee.demo.dao.DemoDao;
@@ -30,7 +30,7 @@ public class DemoApiImpl implements DemoApi {
     @Autowired
     private DemoDao demoDao;
     @Autowired
-    private DateService dataService;
+    private DataService dataService;
     @Autowired
     private UserApi userApi;
 
@@ -69,35 +69,35 @@ public class DemoApiImpl implements DemoApi {
                 user.setEmail("abc"+rad+"@d.com");
                 user.setNickname("小米乐天"+rad);
                 user.setRealname("米饭宝宝"+rad);
-                this.dataService.createModel(user);
+                this.dataService.create(user);
                 log.info("userId"+ user.getId());
                 break;
             }
             case  2: {
-                User user = this.dataService.retrieveModel(User.class, 20L);
+                User user = this.dataService.retrieve(User.class, 20L);
                 user.setNickname("小米粒");
                 user.setPassword("123456");
-                this.dataService.updateModel(user);
-                user = this.dataService.retrieveModel(User.class, 20L);
+                this.dataService.update(user);
+                user = this.dataService.retrieve(User.class, 20L);
                 log.info("user："+user);
                 break;
             }
             case  3: {
-                List<User> users = this.dataService.findModelByProperty(User.class, "id", Arrays.asList(1,2,3,15));
+                List<User> users = this.dataService.findByProperty(User.class, "id", Arrays.asList(1,2,3,15));
                 log.info("users："+users);
                 break;
             }
             case  4: {
-                User user = this.dataService.findOneModelByProperty(User.class, "password", "11111");
+                User user = this.dataService.findOneByProperty(User.class, "password", "11111");
                 log.info("user："+user);
-                this.dataService.deleteModel(user);
+                this.dataService.delete(user);
                 break;
             }
             case  5: {
-                User user = this.dataService.findOneModelByProperty(User.class, "password", "11111");
+                User user = this.dataService.findOneByProperty(User.class, "password", "11111");
                 log.info("user："+user);
 
-                int ret = this.dataService.deleteModelPhysically(user);
+                int ret = this.dataService.deletePhysically(user);
                 log.info("deleted:{}", ret);
                 break;
             }
@@ -105,7 +105,7 @@ public class DemoApiImpl implements DemoApi {
                 Map<String, Object> params = new LinkedHashMap<>();
                 params.put("password", "111111");
                 params.put("sex", 3);
-                List<User> list = this.dataService.findModelByProps(User.class, params);
+                List<User> list = this.dataService.findByProps(User.class, params);
                 log.info("list："+list);
                 break;
             }
@@ -138,13 +138,13 @@ public class DemoApiImpl implements DemoApi {
 
                     list.add(user);
                 }
-                this.dataService.create(DemoSqlKeyConst.createUserBatch, list);
+                this.dataService.createUseSql(DemoSqlKeyConst.createUserBatch, list);
                 break;
             }
             case 2:{
                 Map<String, Object> params = new HashMap<>();
                 params.put("nickname", "小米");
-                Pager<Map<String, Object>> pager = this.dataService.query(DemoSqlKeyConst.demoQueryCount, DemoSqlKeyConst.demoQueryList, 2, 3, params);
+                Pager<Map<String, Object>> pager = this.dataService.queryUseSql(DemoSqlKeyConst.demoQueryCount, DemoSqlKeyConst.demoQueryList, 2, 3, params);
                 log.info("pager:"+pager.getRecords());
                 break;
             }
@@ -157,13 +157,13 @@ public class DemoApiImpl implements DemoApi {
                 user.setEmail("abc"+i+"@d.com");
                 user.setNickname("小小米"+i);
                 user.setRealname("米小饭"+i);
-                this.dataService.create(DemoSqlKeyConst.createUser, user);
+                this.dataService.createUseSql(DemoSqlKeyConst.createUser, user);
                 break;
             }
             case 4:{
-                User user = this.dataService.retrieveModel(User.class, 17L);
+                User user = this.dataService.retrieve(User.class, 17L);
                 user.setRealname("笑傲米饭");
-                this.dataService.update(DemoSqlKeyConst.updateUser, user);
+                this.dataService.updateUseSql(DemoSqlKeyConst.updateUser, user);
                 break;
             }
         }
@@ -210,4 +210,7 @@ public class DemoApiImpl implements DemoApi {
         demoDao.bathBindUserRole(userId, roleIds);
     }
 
+    public void truncateTemp(){
+        demoDao.truncateTemp();
+    }
 }
